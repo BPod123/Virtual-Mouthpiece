@@ -22,9 +22,9 @@ def resizeFile(fileName, newName, targetDim):
     del nameFormatDivide, nameDimDivide
     # newName = "Resized Files/" + name + "Resized{0}".format(format)
     if 'gif' in format:
-        resize_gif("Sample Files/{0}".format(fileName), newName, targetDim)
+        resize_gif(fileName, newName, targetDim)
     else:
-        im = Image.open("Sample Files/{0}".format(fileName)).resize(targetDim)
+        im = Image.open(fileName).resize(targetDim)
         im.save(newName)
     # if format == 'gif':
 
@@ -141,13 +141,17 @@ if __name__ == '__main__':
     width
     height
     """
+    if "Resize Demo" in os.listdir():
+        os.chdir("Resize Demo")
+
     args = sys.argv
     if len(args) >= 5:
         src, dest, width, height = args[1], args[2], int(args[3]), int(args[4])
         targetDimensions = (width, height)
-        for fileName in os.listdir(src):
-            resizeFile(fileName, dest + "/" + fileName, targetDimensions)
-    targetDimensions = (600, 200)#(600, 200) # Width x Height
-    for fileName in os.listdir("Sample Files"):
-        resizeFile(fileName, "Resized Files/" + fileName, targetDimensions)
+        resizeFile(src, dest, targetDimensions)
+        # for fileName in os.listdir(src):
+        #     resizeFile(fileName, dest + "/" + fileName, targetDimensions)
+    # targetDimensions = (600, 200)#(600, 200) # Width x Height
+    # for fileName in os.listdir("Sample Files"):
+    #     resizeFile(fileName, "Resized Files/" + fileName, targetDimensions)
 
