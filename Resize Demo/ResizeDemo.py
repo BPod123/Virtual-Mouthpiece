@@ -1,6 +1,7 @@
 import os
 from PIL import Image, ImageSequence
 import numpy as np
+import sys
 def getFrames(gif:Image):
     """
     :param gif: The gif as a PIL Image
@@ -12,14 +13,14 @@ def getFrames(gif:Image):
          frame in ImageSequence.Iterator(gif)])
     return gifFrames
 
-def resizeFile(fileName, targetDim):
+def resizeFile(fileName, newName, targetDim):
 
     nameDimDivide = fileName.find("_")
     nameFormatDivide = fileName.rindex(".")
     name = fileName[:nameDimDivide]
     format = fileName[nameFormatDivide:].lower().replace(" ", "")
     del nameFormatDivide, nameDimDivide
-    newName = "Resized Files/" + name + "Resized{0}".format(format)
+    # newName = "Resized Files/" + name + "Resized{0}".format(format)
     if 'gif' in format:
         resize_gif("Sample Files/{0}".format(fileName), newName, targetDim)
     else:
@@ -133,8 +134,20 @@ def extract_and_resize_frames(path, resize_to=None):
 
 
 if __name__ == '__main__':
-
+    """
+    Args:
+    source directory
+    Directory for resized images/videos
+    width
+    height
+    """
+    args = sys.argv
+    if len(args) >= 5:
+        src, dest, width, height = args[1], args[2], int(args[3]), int(args[4])
+        targetDimensions = (width, height)
+        for fileName in os.listdir(src):
+            resizeFile(fileName, dest + "/" + fileName, targetDimensions)
     targetDimensions = (600, 200)#(600, 200) # Width x Height
     for fileName in os.listdir("Sample Files"):
-        resizeFile(fileName, targetDimensions)
+        resizeFile(fileName, "Resized Files/" + fileName, targetDimensions)
 
