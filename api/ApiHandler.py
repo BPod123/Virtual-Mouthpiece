@@ -2,6 +2,7 @@ from flask_restful import Api, Resource, reqparse
 from werkzeug.datastructures import FileStorage
 from api.ResizeDemo import main as resizeImage
 from PIL import Image
+from FileTransfer.Client import sendFile
 class ApiHandler(Resource):
   def get(self):
     return {
@@ -22,10 +23,13 @@ class ApiHandler(Resource):
     image_file = args['file']
     src = "Resize Demo/Sample Files/{0}".format(args['file'].filename)
     dest = "Resize Demo/Resized Files/{0}".format(args['file'].filename)
+
     resizeImage(src, dest, 600, 200)
-    if not dest.endswith(".gif"):
-      im = Image.open(dest)
-      im.show()
+    sendFile(dest)
+    # if not dest.endswith(".gif"):
+    #   im = Image.open(dest)
+      # im.show()
+
 
 
 
