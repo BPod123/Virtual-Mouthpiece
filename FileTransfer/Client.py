@@ -3,7 +3,7 @@ def sendFile(filename):
     SEPARATOR = "<SEPARATOR>"
     BUFFER_SIZE = 4096
 
-    host = "192.168.100.114"
+    host = "192.168.100.112"
 
     port = 5001
 
