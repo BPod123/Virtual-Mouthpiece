@@ -5,7 +5,7 @@ def recieveFiles():
     while True:
         try:
             # device's IP address
-            SERVER_HOST = "172.16.118.185" #"0.0.0.0"
+            SERVER_HOST = "128.61.34.95" #"0.0.0.0"
             SERVER_PORT = 5001
             # receive 4096 bytes each time
             BUFFER_SIZE = 4096
