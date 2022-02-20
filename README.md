@@ -24,6 +24,16 @@ Give a ⭐️ if this project helped you!
 This project is [MIT](https://spdx.org/licenses/MIT.html) licensed.
 
 # Release Notes
+## v0.2.0
+### Features
+* Ability to manually transmit data at actual physical location so that the user can move files utilizing a USB.
+* Transmits data by transferring files from USB to Raspberry Pi utilizing a Python script running on the Raspberry Pi
+* Ability to select multiple billboards on the frontend and then send data to the multiple locations if multiple are selected
+### Bug Fixes
+* Fixed some issues with testing LED panels through soldering and new hardware
+### Known Issues
+* LED Panels still don't behave ideally, currently investigating possible solutions.
+
 ## v0.1.0
 ### Features
 * Users can now drag and drop images into application's drag-and-drop zone to send images to billboard.
