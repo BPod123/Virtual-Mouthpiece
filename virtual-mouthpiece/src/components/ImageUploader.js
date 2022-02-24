@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
+import Checkboxes from "./Checkboxes";
 
-const ImageUploader = () => {
+export default function ImageUploader() {
+
   const fileInput = useRef(null);
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
@@ -17,15 +19,16 @@ const ImageUploader = () => {
     let imageFile = event.dataTransfer.files[0];
     handleFile(imageFile);
   };
+
   return (
-    <div className="wrapper">
+    <div className="fullComponent">
       <div
-        className="drop_zone"
+        className="dropZone"
         onDragOver={handleOnDragOver}
         onDrop={handleOnDrop}
         onClick={() => fileInput.current.click()}
       >
-        <p>Drag and drop image here....</p>
+        <div className="dragText">Drag and drop image here</div>
         <input
           type="file"
           accept="image/*"
@@ -34,13 +37,33 @@ const ImageUploader = () => {
           onChange={(e) => handleFile(e.target.files[0])}
         />
       </div>
-      {previewUrl && (
-        <div className="image">
-          <img src={previewUrl} alt="image" />
-          <span> {image.name} </span>
-        </div>
-      )}
+      <h2>Files Uploaded:</h2>
+      <div className="item">
+        {previewUrl && (
+          <div className="image">
+            <img src={previewUrl} alt="image"/>
+            <div>{image.name}</div>
+          </div>
+        )}
+      </div>
+      <Checkboxes />
+      <button
+        className="sendButton"
+        onClick={() => {
+          const fd = new FormData();
+          image && console.log(image.name)
+          image && fd.append('file', image)
+          fetch('/flask/hello', {
+            method: 'POST',
+            body: fd
+          }).then(resp => {
+            resp.json().then(data => {console.log(data)})
+          })
+        }}
+      >
+        Send to Billboard
+      </button>
     </div>
   );
-};
-export default ImageUploader;
+  
+}

@@ -1,20 +1,125 @@
-.App {
+
+body {
+  margin:0;
+  height: 100vh;
+  background-color: #282D35;
+}
+
+nav {
   display: flex;
-  text-align: center;
-  justify-content: center;
   align-items: center;
-  font-family: sans-serif;
-  flex-direction: row;
-  width: 100vw;
+  background-color: #21222A;
+  height: 90px;
+  padding: 30px 25px;
 }
 
-label {
-  width: 350px;
-  box-sizing: border-box;
+.title {
+  margin-right: auto;
+  color: #61DAFB;
+  font-weight: 700;
+  font-size: 30px;
+}
+button {
+  text-align: center;
+  font-weight: 600;
+  font-size: large;
+  border: none;
+  color: white;
 }
 
+.redButton {
+  background-color: #ee4c50;
+  padding: 12px;
+  margin-right: 10px;
+}
+
+.blueButton {
+  background-color: #61DAFB;
+  padding: 10px;
+}
+
+.fullComponent {
+  padding: 57px 27px;
+  color: white;
+  font-size: large;
+  font-weight: 500;
+}
+
+img {
+  height: 150px;
+  width: auto;
+}
+
+.dropZone {
+  border-style: dotted;
+  border-color: white;
+  border-width: 5px;
+  text-align: center;
+  width: 300px;
+  height: 300px;
+  background-color:black;
+  padding: 20px
+}
+
+.dragText {
+  margin-top: 40%;
+}
+
+/*Checkmark Stuff*******************************************/
 .container {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  grid-gap: 1rem;
+  display: block;
+  position: relative;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  padding-left: 26px;
+  margin-left: 10px;
+}
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+.checkmark {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: white;
+}
+.container input:checked ~ .checkmark {
+  background-color: #ee4c50;
+}
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+.container .checkmark:after {
+  left: 6px;
+  top: 3px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+/************************************************/
+
+.top {
+  margin-top: 1%;
+}
+.bottom {
+  margin-bottom: 1%;
+}
+
+.sendButton {
+  background-color: #ee4c50;
+  padding: 12px;
 }
