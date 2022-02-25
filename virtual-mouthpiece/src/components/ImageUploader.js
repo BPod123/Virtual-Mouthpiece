@@ -9,8 +9,7 @@ export default function ImageUploader() {
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
 
-  const [fileList, setFileList] = useState([
-    {url:previewUrl, image:image}]);
+  const [fileList, setFileList] = useState([]);
   const [firstTime, setFirstTime] = useState(true);
 
   function handleFile(file) {
@@ -19,15 +18,6 @@ export default function ImageUploader() {
     /*also weird behavior when user selects the same image consecutively*/
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
-    if (firstTime) {
-      setFileList([
-        {url:url, image:file}]);
-    }
-    else {
-      setFileList(fileList.concat([
-        {url:url, image:file}]));
-    }
-    setFirstTime(false);
   }
 
   function handleOnDragOver(event) {
@@ -40,6 +30,19 @@ export default function ImageUploader() {
     handleFile(imageFile);
   }
 
+  function onSlideshowClick() {
+    console.log("clicked");
+    if (firstTime) {
+      setFileList([
+        {url:previewUrl, image:image}]);
+      setFirstTime(false);
+    }
+    else {
+      setFileList(fileList.concat([
+        {url:previewUrl, image:image}]));
+    }
+  }
+  console.log("hi");
   return (
     <div className="fullComponent">
 
@@ -59,20 +62,27 @@ export default function ImageUploader() {
         />
       </div>
 
-      <h2>Files Uploaded:</h2>
-      {previewUrl && 
-        (<ImagePreviewer source={previewUrl} image={image} />)
-      }
-      
+      <h2>File Uploaded:</h2>
+      <ImagePreviewer url={previewUrl} image={image} />
       <Checkboxes />
       <SendButton image={image}/>
-      <div className="slideshowPreview">
-        {
-          fileList.map(
-            data => {return (<ImagePreviewer url={data.url} image={data.image}/>);}
-          )
-        }
-      </div>
+      
+      {previewUrl &&
+        (<button 
+          className="slideshowButton"
+          onClick={()=>{onSlideshowClick();}}>
+            Add To Slideshow
+        </button>)
+      }
+      {fileList.length > 0 &&
+        <div className="slideshowPreview">
+          {
+            fileList.map(
+              data => {return (<ImagePreviewer url={data.url} image={data.image}/>);}
+            )
+          }
+        </div>
+    }
     </div>
   );
 }
