@@ -6,6 +6,7 @@ function App() {
   return (
     <div>
       <Navbar />
+      <div className="topMargin"></div>
       <ImageUploader />
     </div>
   )

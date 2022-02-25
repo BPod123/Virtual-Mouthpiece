@@ -1,33 +1,43 @@
 
 body {
   margin:0;
-  height: 100vh;
   background-color: #282D35;
 }
 
-nav {
-  display: flex;
-  align-items: center;
+/*NAV STUFF**********************************/
+
+header {
   background-color: #21222A;
-  height: 90px;
-  padding: 30px 25px;
-  box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
-  height: 75px;
+  top: 0;
+  left: 0;
+  right: 0;
+  box-shadow: 0px 0px 20px 0px black;
+  justify-content: space-between;
+  padding: 1%;
+  height: auto;
 }
 .navItems {
-  list-style: none;
+  list-style-type: none;
   display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
-.navItems > li {
-  padding: 10px;
-}
-
-.title {
+.titleLi {
   margin-right: auto;
-  color: #61DAFB;
-  font-weight: 800;
-  font-size: 34px;
 }
+.title {
+  margin: auto;
+  color: #61DAFB;
+  font-weight: 700;
+  font-size: 250%;
+}
+.subtitle {
+  margin: auto;
+  font-size: 150%;
+  color: #61DAFB;
+  font-style: italic;
+}
+/**********************************************/
 
 button {
   text-align: center;
@@ -38,16 +48,18 @@ button {
 }
 .redButton {
   background-color: #ee4c50;
-  padding: 10px;
+  padding: 11.5px;
+  margin-right: 20px;
 }
 .blueButton {
   background-color: #61DAFB;
   padding: 10px;
   color: black;
+  margin-right: 20px;
 }
 
 .fullComponent {
-  padding: 57px 27px;
+  padding: 30px;
   color: white;
   font-size: large;
   font-weight: 500;
@@ -83,9 +95,6 @@ img {
   color: #f1f1f1;
   padding: 10px;
   font-size: small;
-}
-.slideshowPreview {
-  background-color: #21222A;
 }
 
 /*Checkmark Stuff*******************************************/
@@ -148,4 +157,14 @@ img {
   padding: 12px;
   margin-top: 1%;
   margin-bottom: 2%;
+}
+.slideshowButton {
+  background-color: #ee4c50;
+  padding: 12px;
+  margin-top: 1%;
+  margin-bottom: 2%;
+  margin-left: 2%;
+}
+.slideshowPreview {
+  background-color: #21222A;
 }

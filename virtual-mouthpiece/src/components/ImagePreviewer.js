@@ -1,9 +1,9 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 
 export default function ImagePreviewer(props) {
 
     const {url, image} = props
-    if (image && url) {
+    if (image) {
         return (
             <span className="preview">
                 <img src={url} alt="image" />
@@ -12,7 +12,7 @@ export default function ImagePreviewer(props) {
         );
     }
     else {
-        return (<span></span>);
+        return <span>Nothing here yet</span>;
     }
 
 }
