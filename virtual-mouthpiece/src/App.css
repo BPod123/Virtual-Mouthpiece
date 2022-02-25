@@ -11,14 +11,24 @@ nav {
   background-color: #21222A;
   height: 90px;
   padding: 30px 25px;
+  box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+  height: 75px;
+}
+.navItems {
+  list-style: none;
+  display: flex;
+}
+.navItems > li {
+  padding: 10px;
 }
 
 .title {
   margin-right: auto;
   color: #61DAFB;
-  font-weight: 700;
-  font-size: 30px;
+  font-weight: 800;
+  font-size: 34px;
 }
+
 button {
   text-align: center;
   font-weight: 600;
@@ -26,16 +36,14 @@ button {
   border: none;
   color: white;
 }
-
 .redButton {
   background-color: #ee4c50;
-  padding: 12px;
-  margin-right: 10px;
+  padding: 10px;
 }
-
 .blueButton {
   background-color: #61DAFB;
   padding: 10px;
+  color: black;
 }
 
 .fullComponent {
@@ -45,24 +53,39 @@ button {
   font-weight: 500;
 }
 
-img {
-  height: 150px;
-  width: auto;
-}
-
 .dropZone {
-  border-style: dotted;
-  border-color: white;
-  border-width: 5px;
+  border: 5px dotted white;
   text-align: center;
   width: 300px;
-  height: 300px;
+  height: 250px;
   background-color:black;
   padding: 20px
 }
-
 .dragText {
   margin-top: 40%;
+}
+
+img {
+  height: 200px;
+  width: auto;
+  border: white solid 3px;
+  margin: 10px;
+}
+.preview {
+  position: relative;
+}
+.previewText {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+  background: rgb(0, 0, 0);
+  background: rgba(0, 0, 0, 0.5);
+  color: #f1f1f1;
+  padding: 10px;
+  font-size: small;
+}
+.slideshowPreview {
+  background-color: #21222A;
 }
 
 /*Checkmark Stuff*******************************************/
@@ -110,6 +133,7 @@ img {
   border-width: 0 3px 3px 0;
   transform: rotate(45deg);
 }
+
 /************************************************/
 
 .top {
@@ -122,4 +146,6 @@ img {
 .sendButton {
   background-color: #ee4c50;
   padding: 12px;
+  margin-top: 1%;
+  margin-bottom: 2%;
 }
