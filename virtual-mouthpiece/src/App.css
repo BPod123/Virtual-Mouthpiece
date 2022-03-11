@@ -39,6 +39,8 @@ header {
 }
 /**********************************************/
 
+
+/*BUTTONS**************************************/
 button {
   text-align: center;
   font-weight: 600;
@@ -57,14 +59,15 @@ button {
   color: black;
   margin-right: 20px;
 }
+/*****************************************************/
 
+/*ImageUploader****************************************/
 .fullComponent {
   padding: 30px;
   color: white;
   font-size: large;
   font-weight: 500;
 }
-
 .dropZone {
   border: 5px dotted white;
   text-align: center;
@@ -76,12 +79,15 @@ button {
 .dragText {
   margin-top: 40%;
 }
+/*******************************************************/
 
+/*ImagePreviewer*****************************************/
 img {
   height: 200px;
   width: auto;
   border: white solid 3px;
   margin: 10px;
+  margin-bottom: 0px;
 }
 .preview {
   position: relative;
@@ -96,6 +102,20 @@ img {
   padding: 10px;
   font-size: small;
 }
+.timeBox {
+  margin-left: 10px;
+  display: block;
+}
+.timeBox:focus {
+  background-color: lightgray;
+}
+.imagePreviewer {
+  vertical-align: top;
+  display: inline-block;
+  text-align: center;
+  width:auto;
+}
+/******************************************************/
 
 /*Checkmark Stuff*******************************************/
 .container {

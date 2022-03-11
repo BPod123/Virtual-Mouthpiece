@@ -42,7 +42,9 @@ export default function ImageUploader() {
         {url:previewUrl, image:image}]));
     }
   }
+
   console.log("hi");
+
   return (
     <div className="fullComponent">
 
@@ -78,7 +80,7 @@ export default function ImageUploader() {
         <div className="slideshowPreview">
           {
             fileList.map(
-              data => {return (<ImagePreviewer url={data.url} image={data.image}/>);}
+              data => {return (<ImagePreviewer url={data.url} image={data.image} showTime={true}/>);}
             )
           }
         </div>
