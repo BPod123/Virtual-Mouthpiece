@@ -24,6 +24,17 @@ Give a ⭐️ if this project helped you!
 This project is [MIT](https://spdx.org/licenses/MIT.html) licensed.
 
 # Release Notes
+## v0.3.0
+### Features
+* Users can now create a slideshow utilizing the add to slideshow button that pops up when an image is uploaded.
+* Users can now 
+* Users have the ability to set a designated runtime for each image in the slideshow using the time text box underneath each image preview in the slideshow preview component.
+### Bug Fixes
+* Continued figuring out some of the hardware problems and put in order to get another version of a Raspberry Pi
+### Known Issues
+* If image uploading is canceled for any image after first image that is uploaded, the React web app crashes.
+* The Raspberry Pi is not working ideally due to hardware issues.
+
 ## v0.2.0
 ### Features
 * Ability to manually transmit data at actual physical location so that the user can move files utilizing a USB.
