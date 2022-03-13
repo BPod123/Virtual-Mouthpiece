@@ -10,7 +10,7 @@ export default function ImagePreviewer(props) {
                     <img src={url} alt="image" />
                     <p className="previewText">{image.name}</p>
                 </span>
-                <input type="text" className="timeBox" placeholder="Time (seconds)" value="5"></input>
+                <input type="text" className="timeBox" placeholder="Time (seconds)" defaultValue={5}></input>
             </div>
         );
     }
