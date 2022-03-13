@@ -3,7 +3,6 @@ import Checkboxes from "./Checkboxes";
 import ImagePreviewer from "./ImagePreviewer";
 import SendButton from "./SendButton";
 
-
 export default function ImageUploader() {
   const fileInput = useRef(null);
   const [image, setImage] = useState(null);
@@ -33,13 +32,10 @@ export default function ImageUploader() {
   function onSlideshowClick() {
     console.log("clicked");
     if (firstTime) {
-      setFileList([
-        {url:previewUrl, image:image}]);
+      setFileList([{ url: previewUrl, image: image }]);
       setFirstTime(false);
-    }
-    else {
-      setFileList(fileList.concat([
-        {url:previewUrl, image:image}]));
+    } else {
+      setFileList(fileList.concat([{ url: previewUrl, image: image }]));
     }
   }
 
@@ -47,7 +43,6 @@ export default function ImageUploader() {
 
   return (
     <div className="fullComponent">
-
       <div
         className="dropZone"
         onDragOver={handleOnDragOver}
@@ -67,24 +62,37 @@ export default function ImageUploader() {
       <h2>File Uploaded:</h2>
       <ImagePreviewer url={previewUrl} image={image} />
       <Checkboxes />
-      <SendButton image={image}/>
-      
-      {previewUrl &&
-        (<button 
+      <SendButton image={image} />
+
+      {previewUrl && (
+        <button
           className="slideshowButton"
-          onClick={()=>{onSlideshowClick();}}>
-            Add To Slideshow
-        </button>)
-      }
-      {fileList.length > 0 &&
+          onClick={() => {
+            onSlideshowClick();
+          }}
+        >
+          Add To Slideshow
+        </button>
+      )}
+      {fileList.length > 0 && (
         <div className="slideshowPreview">
-          {
-            fileList.map(
-              data => {return (<ImagePreviewer url={data.url} image={data.image} showTime={true}/>);}
-            )
-          }
+          <input
+            type="text"
+            className="titleBox"
+            placeholder="Slideshow Title"
+          ></input>
+          <br />
+          {fileList.map((data) => {
+            return (
+              <ImagePreviewer
+                url={data.url}
+                image={data.image}
+                showTime={true}
+              />
+            );
+          })}
         </div>
-    }
+      )}
     </div>
   );
 }

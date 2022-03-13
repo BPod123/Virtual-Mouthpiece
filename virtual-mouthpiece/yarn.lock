@@ -7408,6 +7408,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"goober@npm:^2.1.1":
+  version: 2.1.8
+  resolution: "goober@npm:2.1.8"
+  peerDependencies:
+    csstype: ^3.0.10
+  checksum: c877e854814e29c085c0d3f7879492788ceff9b1a0a0d731bfe22e59a2d206f991c3fb44ad14a32a9c2f396e3280ad6a8e597a95bb2d052c59dd7c25814f1c67
+  languageName: node
+  linkType: hard
+
 "graceful-fs@npm:^4.1.11, graceful-fs@npm:^4.1.15, graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.4":
   version: 4.2.6
   resolution: "graceful-fs@npm:4.2.6"
@@ -12369,6 +12378,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-hot-toast@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "react-hot-toast@npm:2.2.0"
+  dependencies:
+    goober: ^2.1.1
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: bb34ddc8ada14cbd75a37f14d2563412174e23276eb05e9fb23a031b6d8374ca190cefa1940692f4371529ddafeb2d4b8d3e5023187c2851ec8cb247461553ee
+  languageName: node
+  linkType: hard
+
 "react-is@npm:^16.8.1":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
@@ -14992,6 +15013,7 @@ __metadata:
     "@testing-library/user-event": ^12.1.10
     react: ^17.0.2
     react-dom: ^17.0.2
+    react-hot-toast: ^2.2.0
     react-scripts: 4.0.3
     web-vitals: ^1.0.1
   languageName: unknown
