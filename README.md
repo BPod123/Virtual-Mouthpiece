@@ -24,6 +24,17 @@ Give a ⭐️ if this project helped you!
 This project is [MIT](https://spdx.org/licenses/MIT.html) licensed.
 
 # Release Notes
+## 0.4.0
+### Features
+* Users are now able to add images to slideshow with an improved UI/UX.
+* Users can see API Success/Error/Loading responses in a Toast
+### Bug Fixes
+* React App does not crash
+* Continued figuring out hardware issues
+### Known Issues
+* The Raspberry Pi is not working ideally due to hardware issues.
+* Slideshow runtimes and titles are not sending through API.
+
 ## v0.3.0
 ### Features
 * Users can now create a slideshow utilizing the add to slideshow button that pops up when an image is uploaded.
