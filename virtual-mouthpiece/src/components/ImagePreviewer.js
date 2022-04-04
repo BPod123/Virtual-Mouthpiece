@@ -5,9 +5,9 @@ export default function ImagePreviewer(props) {
     const {url, image, showTime} = props
     if (image && showTime) {
         return (
-            <div class="imagePreviewer">
+            <div className="imagePreviewer">
                 <span className="preview">
-                    <img src={url} alt="image" />
+                    <img src={url} alt="uploaded" />
                     <p className="previewText">{image.name}</p>
                 </span>
                 <input type="text" className="timeBox" placeholder="Time (seconds)" defaultValue={5}></input>
@@ -16,9 +16,9 @@ export default function ImagePreviewer(props) {
     }
     else if (image) {
         return (
-            <div class="imagePreviewer">
+            <div className="imagePreviewer">
                 <span className="preview">
-                    <img src={url} alt="image" />
+                    <img src={url} alt="uploaded" />
                     <p className="previewText">{image.name}</p>
                 </span>
             </div>

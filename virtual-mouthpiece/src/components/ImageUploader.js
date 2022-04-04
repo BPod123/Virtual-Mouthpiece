@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react";
-import Checkboxes from "./Checkboxes";
 import ImagePreviewer from "./ImagePreviewer";
 import SendButton from "./SendButton";
 
@@ -10,6 +9,8 @@ export default function ImageUploader() {
 
   const [fileList, setFileList] = useState([]);
   const [firstTime, setFirstTime] = useState(true);
+
+  const [checkboxes, setCheckBoxes] = useState({ billboard: [], response: [] });
 
   function handleFile(file) {
     setImage(file);
@@ -22,6 +23,7 @@ export default function ImageUploader() {
   function handleOnDragOver(event) {
     event.preventDefault();
   }
+
   function handleOnDrop(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -39,7 +41,27 @@ export default function ImageUploader() {
     }
   }
 
-  console.log("hi");
+  const handleChange = (e) => {
+    // Destructuring
+    const { value, checked } = e.target;
+    const { billboard } = checkboxes;
+
+    console.log(`${value} is ${checked}`);
+    if (checked) {
+      setCheckBoxes({
+        billboard: [...billboard, value],
+        response: [...billboard, value],
+      });
+    }
+
+    // Case 2  : The user unchecks the box
+    else {
+      setCheckBoxes({
+        billboard: billboard.filter((e) => e !== value),
+        response: billboard.filter((e) => e !== value),
+      });
+    }
+  };
 
   return (
     <div className="fullComponent">
@@ -61,8 +83,21 @@ export default function ImageUploader() {
 
       <h2>File Uploaded:</h2>
       <ImagePreviewer url={previewUrl} image={image} />
-      <Checkboxes />
-      <SendButton image={image} />
+      <div>
+        <div className="top"></div>
+        <label className="container">
+          Front Board
+          <input type="checkbox" onChange={handleChange} value="front"></input>
+          <span className="checkmark"></span>
+        </label>
+        <label className="container">
+          Airstrip Board
+          <input type="checkbox" onChange={handleChange} value="airstrip"></input>
+          <span className="checkmark"></span>
+        </label>
+        <div className="bottom"></div>
+      </div>
+      <SendButton image={image} checks={checkboxes} imageList={fileList}/>
 
       {previewUrl && (
         <button

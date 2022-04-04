@@ -14,6 +14,7 @@ class ApiHandler(Resource):
     print(self)
     parser = reqparse.RequestParser()
     parser.add_argument('file', type=FileStorage, location='files')
+    parser.add_argument('board', type=str, location='form')
 
     args = parser.parse_args()
 
@@ -21,11 +22,14 @@ class ApiHandler(Resource):
     # note, the post req from frontend needs to match the strings here (e.g. 'type and 'message')
 
     image_file = args['file']
+    board_names = args['board'].split(',')
     src = "Resize Demo/Sample Files/{0}".format(args['file'].filename)
     dest = "Resize Demo/Resized Files/{0}".format(args['file'].filename)
 
+
     resizeImage(src, dest, 600, 200)
     sendFile(dest)
+    # print("board name:", board_names)
     # if not dest.endswith(".gif"):
     #   im = Image.open(dest)
       # im.show()
