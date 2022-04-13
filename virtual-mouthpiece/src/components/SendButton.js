@@ -2,19 +2,25 @@ import React from "react";
 import toast from "react-hot-toast";
 
 export default function SendButton(props) {
-  const { image, checks, imageList } = props;
+  const { image, checks, imageList, slideshowTitle } = props;
   return (
     <button
       className="sendButton"
       onClick={() => {
         console.log("billboard clicked");
         const fd = new FormData();
-        imageList.length !== 0 && console.log(imageList);
+        let imageUrlList = [];
+        for (const img of imageList) {
+            imageUrlList.push(img.url);
+        }
+
+        imageList.length !== 0 && fd.append("files", imageUrlList);
         image && fd.append("file", image);
         checks && fd.append("board", checks['billboard']);
+        slideshowTitle && fd.append("title", slideshowTitle);
         toast.promise(
-          fetch("/flask/upload", {
-        //   fetch("http://127.0.0.1:5000/flask/upload", {
+        //   fetch("/flask/upload", {
+          fetch("http://127.0.0.1:5000/flask/upload", {
             method: "POST",
             body: fd,
           }).then((resp) => {

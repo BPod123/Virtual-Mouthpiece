@@ -12,6 +12,12 @@ export default function ImageUploader() {
 
   const [checkboxes, setCheckBoxes] = useState({ billboard: [], response: [] });
 
+  const [slideshowTitle, setSlideshowTitle] = useState("");
+
+  function handleSlideshowTitle(title) {
+    setSlideshowTitle(title);
+  }
+
   function handleFile(file) {
     setImage(file);
     /*bug where program crashes here if canceling image select after selecting image already*/
@@ -83,7 +89,7 @@ export default function ImageUploader() {
 
       <h2>File Uploaded:</h2>
       <ImagePreviewer url={previewUrl} image={image} />
-      <div>
+      <div className="checkboxes">
         <div className="top"></div>
         <label className="container">
           Front Board
@@ -92,12 +98,16 @@ export default function ImageUploader() {
         </label>
         <label className="container">
           Airstrip Board
-          <input type="checkbox" onChange={handleChange} value="airstrip"></input>
+          <input
+            type="checkbox"
+            onChange={handleChange}
+            value="airstrip"
+          ></input>
           <span className="checkmark"></span>
         </label>
         <div className="bottom"></div>
       </div>
-      <SendButton image={image} checks={checkboxes} imageList={fileList}/>
+      <SendButton image={image} checks={checkboxes} imageList={fileList} slideshowTitle={slideshowTitle} />
 
       {previewUrl && (
         <button
@@ -115,8 +125,10 @@ export default function ImageUploader() {
             type="text"
             className="titleBox"
             placeholder="Slideshow Title"
+            onChange={(e) => handleSlideshowTitle(e.target.value)}
           ></input>
           <br />
+          {console.log(slideshowTitle)}
           {fileList.map((data) => {
             return (
               <ImagePreviewer
