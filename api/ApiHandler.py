@@ -3,11 +3,16 @@ from werkzeug.datastructures import FileStorage
 from api.ResizeDemo import main as resizeImage
 from PIL import Image
 from FileTransfer.Client import sendFile
+import socket
 class ApiHandler(Resource):
   def get(self):
+    sock = socket.socket()
+    sock.bind((socket.gethostbyname(socket.gethostname()), 9003))
+    sock.connect((socket.gethostbyname(socket.gethostname()), 9002))
+    names = sock.recv(2048).decode()
     return {
       'resultStatus': 'SUCCESS',
-      'message': "Hello Api Handler"
+      'message': names
       }
 
   def post(self):

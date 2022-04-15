@@ -12,6 +12,9 @@ def serve(path):
     return send_from_directory(app.static_folder,'index.html')
 
 api.add_resource(ApiHandler, '/flask/upload')
+def main():
+    app.run(debug=True, use_reloader=False)
 
 if __name__ == '__main__':
+    # The reloader makes it initialize Multiple Times
     app.run(debug=True)

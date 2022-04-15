@@ -1,0 +1,9 @@
+{
+    "SERVER_ADDRESS": "172.16.118.223",
+    "SERVER_PORT": 9005,
+    "HOST_PORT": 9002,
+    "NAME": "Display Test",
+    "HEIGHT": 500,
+    "WIDTH": 700,
+    "TRANSITION_DURATION": 1.05
+}
