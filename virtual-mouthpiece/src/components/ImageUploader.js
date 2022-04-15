@@ -14,14 +14,14 @@ export default function ImageUploader() {
 
   const [slideshowTitle, setSlideshowTitle] = useState("");
 
+  const [runtimes, setRuntimes] = useState(new Map());
+
   function handleSlideshowTitle(title) {
     setSlideshowTitle(title);
   }
 
   function handleFile(file) {
     setImage(file);
-    /*bug where program crashes here if canceling image select after selecting image already*/
-    /*also weird behavior when user selects the same image consecutively*/
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
   }
@@ -38,13 +38,19 @@ export default function ImageUploader() {
   }
 
   function onSlideshowClick() {
-    console.log("clicked");
-    if (firstTime) {
+    // console.log("clicked");
+    if (firstTime && image) {
       setFileList([{ url: previewUrl, image: image }]);
       setFirstTime(false);
-    } else {
+    } else if (image) {
       setFileList(fileList.concat([{ url: previewUrl, image: image }]));
     }
+    setImage(null);
+  }
+
+  function handleRuntimeChange(index, runtime) {
+    setRuntimes(new Map(runtimes.set(index, runtime)));
+    // console.log(runtimes);
   }
 
   const handleChange = (e) => {
@@ -52,7 +58,7 @@ export default function ImageUploader() {
     const { value, checked } = e.target;
     const { billboard } = checkboxes;
 
-    console.log(`${value} is ${checked}`);
+    // console.log(`${value} is ${checked}`);
     if (checked) {
       setCheckBoxes({
         billboard: [...billboard, value],
@@ -89,25 +95,6 @@ export default function ImageUploader() {
 
       <h2>File Uploaded:</h2>
       <ImagePreviewer url={previewUrl} image={image} />
-      <div className="checkboxes">
-        <div className="top"></div>
-        <label className="container">
-          Front Board
-          <input type="checkbox" onChange={handleChange} value="front"></input>
-          <span className="checkmark"></span>
-        </label>
-        <label className="container">
-          Airstrip Board
-          <input
-            type="checkbox"
-            onChange={handleChange}
-            value="airstrip"
-          ></input>
-          <span className="checkmark"></span>
-        </label>
-        <div className="bottom"></div>
-      </div>
-      <SendButton image={image} checks={checkboxes} imageList={fileList} slideshowTitle={slideshowTitle} />
 
       {previewUrl && (
         <button
@@ -128,18 +115,45 @@ export default function ImageUploader() {
             onChange={(e) => handleSlideshowTitle(e.target.value)}
           ></input>
           <br />
-          {console.log(slideshowTitle)}
+          {/* {console.log(slideshowTitle)} */}
           {fileList.map((data) => {
             return (
               <ImagePreviewer
                 url={data.url}
                 image={data.image}
                 showTime={true}
+                onRuntimeChange={handleRuntimeChange}
               />
             );
           })}
         </div>
       )}
+      <br />
+      <div className="checkboxes">
+        <div className="top"></div>
+        <label className="container">
+          Front Board
+          <input type="checkbox" onChange={handleChange} value="front"></input>
+          <span className="checkmark"></span>
+        </label>
+        <label className="container">
+          Airstrip Board
+          <input
+            type="checkbox"
+            onChange={handleChange}
+            value="airstrip"
+          ></input>
+          <span className="checkmark"></span>
+        </label>
+        <div className="bottom"></div>
+      </div>
+      <SendButton
+        image={image}
+        checks={checkboxes}
+        imageList={fileList}
+        slideshowTitle={slideshowTitle}
+        runtimes={runtimes}
+      />
     </div>
   );
 }

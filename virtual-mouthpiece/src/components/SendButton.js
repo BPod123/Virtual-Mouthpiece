@@ -2,16 +2,16 @@ import React from "react";
 import toast from "react-hot-toast";
 
 export default function SendButton(props) {
-  const { image, checks, imageList, slideshowTitle } = props;
+  const { image, checks, imageList, slideshowTitle, runtimes } = props;
   return (
     <button
       className="sendButton"
       onClick={() => {
-        console.log("billboard clicked");
+        // console.log("billboard clicked");
         const fd = new FormData();
         let imageUrlList = [];
         for (const img of imageList) {
-            imageUrlList.push(img.url);
+            imageUrlList.push({url:img.url, runtime:runtimes.has(img.url) ? runtimes.get(img.url) : "5"});
         }
 
         imageList.length !== 0 && fd.append("files", imageUrlList);
@@ -23,10 +23,6 @@ export default function SendButton(props) {
           fetch("http://127.0.0.1:5000/flask/upload", {
             method: "POST",
             body: fd,
-          }).then((resp) => {
-            resp.json().then((data) => {
-              console.log(data);
-            });
           }),
           {
             loading: "Sending...",
