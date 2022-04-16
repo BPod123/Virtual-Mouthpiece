@@ -24,7 +24,7 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-BACKEND_TESTS/
+#BACKEND_TESTS/
 slideshowCompileFolder/
 MANIFEST
 
