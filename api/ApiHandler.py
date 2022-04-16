@@ -3,17 +3,14 @@ from werkzeug.datastructures import FileStorage
 from api.ResizeDemo import main as resizeImage
 from PIL import Image
 from FileTransfer.Client import sendFile
-import socket
+from Server import ServerInstance
+import json
 class ApiHandler(Resource):
+
   def get(self):
-    sock = socket.socket()
-    sock.bind((socket.gethostbyname(socket.gethostname()), 9003))
-    sock.connect((socket.gethostbyname(socket.gethostname()), 9002))
-    names = sock.recv(2048).decode()
-    return {
-      'resultStatus': 'SUCCESS',
-      'message': names
-      }
+    connections = {":".join([str(x) for x in addr]): ServerInstance.server.connections[addr][0] for addr in ServerInstance.server.connections}
+    resString = json.dumps(connections)
+    return resString
 
   def post(self):
     print(self)
@@ -21,6 +18,7 @@ class ApiHandler(Resource):
     parser.add_argument('files', type=str, location='form')
     parser.add_argument('board', type=str, location='form')
     parser.add_argument('title', type=str, location='form')
+
 
     args = parser.parse_args()
 
@@ -39,6 +37,8 @@ class ApiHandler(Resource):
     print("slideshow title:", slideshow_title)
     print("board name:", board_names)
     print("image files:", image_files)
+    ServerInstance.server.compileAndSendSlideshow(args.files, args.board, args.title)
+
     # if not dest.endswith(".gif"):
     #   im = Image.open(dest)
       # im.show()

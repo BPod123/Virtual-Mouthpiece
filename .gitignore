@@ -24,6 +24,8 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+BACKEND_TESTS/
+slideshowCompileFolder/
 MANIFEST
 
 # PyInstaller

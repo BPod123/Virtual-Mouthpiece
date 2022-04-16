@@ -13,7 +13,9 @@ def serve(path):
 
 api.add_resource(ApiHandler, '/flask/upload')
 def main():
+    # app.run(debug=True)
     app.run(debug=True, use_reloader=False)
+    # app.run()
 
 if __name__ == '__main__':
     # The reloader makes it initialize Multiple Times

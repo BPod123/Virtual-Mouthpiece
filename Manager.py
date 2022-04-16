@@ -60,6 +60,7 @@ class Manager(object):
         self.zippedSlideshowPath = os.path.join(self.workingDir, "slideshow.zip")
         self._connectionSettingsChanged = True  # Updated when the server ip, server port, or host port change
         self._connectionStartTime = None  # Used to signal when the connection to the server has been reset
+        self.needPlayReset = False
 
     @property
     def player(self):
@@ -208,7 +209,11 @@ class Manager(object):
                 json.dump(self.config, f, indent=4)
             self.config = newConfig
             self.saveConfig()
-            self.resetPlayer()
+            if self.needPlayReset:
+                self.needPlayReset = False
+                self.resetPlayer()
+
+
             if self._connectionSettingsChanged:
                 self._connectionSettingsChanged = False
                 self.resetConnection()
@@ -221,13 +226,28 @@ class Manager(object):
         Thread(target=self.manageConnection).start()
 
     def receptionHandler(self, connectionSocket: socket.socket, startTime):
-        connectionSocket.settimeout(5)
+        connectionSocket.settimeout(20)
         try:
             while self._connectionStartTime == startTime:
-                numBytes = int(connectionSocket.recv(1024).decode())
-                with open(self.zippedSlideshowPath, "wb") as f:
-                    recv = connectionSocket.recv(int(numBytes))
-                breakpoint()
+                messageType = connectionSocket.recv(1).decode()
+                if messageType == "A":
+                    connectionSocket.send("Y".encode())
+                else:
+                    if messageType == "F":
+                        # Recieving new slideshow
+                        with open(self.zippedSlideshowPath, "wb") as f:
+                            while True:
+                                newBytes = connectionSocket.recv(1024)
+                                if not newBytes:
+                                    break
+                                f.write(newBytes)
+                        self.needPlayReset = True
+
+                    elif messageType == "N":
+                        # Recieving new Name
+                        newName = connectionSocket.recv(1024).decode()
+                        self.name = newName
+                        self.needPlayReset = True
         except:
             pass
         connectionSocket.close()
@@ -244,7 +264,7 @@ class Manager(object):
                     connectionSocket.bind((self.ipaddress, self.hostPort))
                     # Initiate connection, or at least attempt to
                     connectionSocket.connect((self.serverAddr, self.serverPort))
-                    connectionSocket.send(str(len(str(self.name).encode())).encode())
+                    # connectionSocket.send(str(len(str(self.name).encode())).encode())
                     # _ = connectionSocket.recv(1024).decode()
                     connectionSocket.send(self.name.encode())
                     Thread(target=self.receptionHandler, args=(connectionSocket, thisStartTime)).start()
@@ -270,5 +290,6 @@ class Manager(object):
 
 
 if __name__ == '__main__':
-    manager = Manager('Test Manager Working Directory', os.path.join('Test Manager Working Directory', 'Config.json'))
+    manager = Manager('Test Manager Working Directory', os.path.join('Test Manager Working Directory',
+                                                                     'BACKEND_TESTS/Config1.json'))
     manager.run()
