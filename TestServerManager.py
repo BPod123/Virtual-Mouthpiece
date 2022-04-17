@@ -3,6 +3,7 @@ from Slideshow.Maker import compileSlideshow
 from time import sleep
 from threading import Thread
 from Server_Main import main as startServerSide
+
 def ManagerThread():
     manager = Manager('BACKEND_TESTS', "Config.json")
     manager.start()

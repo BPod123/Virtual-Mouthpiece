@@ -7,19 +7,35 @@ export default function SendButton(props) {
     <button
       className="sendButton"
       onClick={() => {
-        // console.log("billboard clicked");
         const fd = new FormData();
-        let imageUrlList = [];
-        for (const img of imageList) {
-            imageUrlList.push({url:img.url, runtime:runtimes.has(img.url) ? runtimes.get(img.url) : "5"});
+
+        if (imageList.length === 0) {
+          fd.append("images", image);
+          fd.append("runtimes", 5);
+        } else {
+          for (const img of imageList) {
+            fd.append("images", img.image);
+            fd.append("runtimes", runtimes.has(img.url) ? runtimes.get(img.url) : 5);
+          }
         }
 
-        imageList.length !== 0 && fd.append("files", imageUrlList);
-        image && fd.append("file", image);
-        checks && fd.append("board", checks['billboard']);
+        for (const runtime of runtimes) {
+          console.log(runtime);
+        }
+
+        for (const check of checks['billboard']){
+            fd.append("boards", check)
+        }
+        
         slideshowTitle && fd.append("title", slideshowTitle);
+
+        if (imageList.length === 0 && image == null) {
+            toast.error("You need to upload at least one image!");
+            return;
+        }
+
         toast.promise(
-        //   fetch("/flask/upload", {
+          //   fetch("/flask/upload", {
           fetch("http://127.0.0.1:5000/flask/upload", {
             method: "POST",
             body: fd,

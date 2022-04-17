@@ -113,8 +113,8 @@ class Server(object):
         connectionSocket.send(str(len(information)).encode())
         _ = connectionSocket.recv(1024)
         connectionSocket.send(information)
-    def compileAndSendSlideshow(self, files, boards, title):
-        breakpoint()
+    # def compileAndSendSlideshow(self, files, boards, title):
+        # breakpoint()
 class ServerInstance(object):
     server = Server(9001, 9002)
 
