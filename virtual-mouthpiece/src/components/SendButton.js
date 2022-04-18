@@ -34,6 +34,11 @@ export default function SendButton(props) {
             return;
         }
 
+        if (checks['billboard'].length === 0) {
+            toast.error("You need to select at least one billboard!");
+            return;
+        }
+
         toast.promise(
           //   fetch("/flask/upload", {
           fetch("http://127.0.0.1:5000/flask/upload", {
