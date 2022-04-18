@@ -12,10 +12,10 @@ import argparse
 default_props = {
         ConfigProps.SERVER_ADDR.value: socket.gethostbyname(socket.gethostname()),
         ConfigProps.SERVER_PORT.value: 9001,
-        ConfigProps.HOST_PORT.value: 9002,
+        ConfigProps.HOST_PORT.value: 9010,
         ConfigProps.NAME.value: "Billboard 9002",
-        ConfigProps.HEIGHT.value: 500,
-        ConfigProps.WIDTH.value: 700,
+        ConfigProps.HEIGHT.value: None,
+        ConfigProps.WIDTH.value: None,
     ConfigProps.TRANSITION_DURATION.value: 1.5,
     }
 
@@ -55,6 +55,31 @@ def WriteConfig(dest: str, SERVER_ADDR=None, SERVER_PORT=None, HOST_PORT=None, N
     }
     with open(dest, "w") as f:
         json.dump(props, f, indent=4)
+def getOption(instruction, type, default):
+    while True:
+        try:
+            choice = input(instruction)
+            if choice.lower().replace(" ", "") == "auto":
+                return default
+            else:
+                choice = type(choice)
+            return choice
+        except:
+            print("Invalid input. Must be of type {0}, or 'Auto'".format(type))
+
+def createConfigCommandLine(path):
+    config = {
+        ConfigProps.SERVER_ADDR.value: getOption(f"""Input the server ip address. or 'Auto' to use the default.\n The default setting is {socket.gethostbyname(socket.gethostname())} (This machine).""", str, socket.gethostbyname(socket.gethostname())),
+        ConfigProps.SERVER_PORT.value: getOption("""Input the port number that the server is hosting on, or 'Auto' to use the default. The default setting is 9001.""", int, 9001),
+        ConfigProps.NAME.value: getOption("""Input the name of this display or 'Auto' to use the default. The default setting is 'Virtual-Mouthpiece'.""", str, "Virtual-Mouthpiece"),
+        ConfigProps.HEIGHT.value: getOption("""Input the height of this display in pixels or 'Auto' to use the default. The default setting is use the primary display's height in pixels.""", int, None),
+        ConfigProps.WIDTH.value: getOption("""Input the width of this display in pixels or 'Auto' to use the default. The default setting is to use the primary display's width in pixels.""", int, None),
+        ConfigProps.HOST_PORT.value: getOption("""Input the port number for the display to use to connect to the server or 'Auto' to use the default. The default setting is 9010.""", int, 9010),
+        ConfigProps.TRANSITION_DURATION.value: getOption("""Input the time to use for transitioning between slides in seconds, or 'Auto'. The default setting is 2.""", float, 2),
+    }
+    with open(path, "w") as f:
+        json.dump(config, f, indent=4)
+
 
 if __name__ == '__main__':
     args = parser.parse_args()

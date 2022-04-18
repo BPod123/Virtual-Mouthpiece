@@ -4,56 +4,87 @@ from math import ceil, log2
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 from Slideshow.Maker import compileSlideshow
+
+
 class Server(object):
-    def __init__(self, port, getRequestPort):
+    def __init__(self, port):
         self.port = port
-        self.getRequestPort = getRequestPort
+        # self.getRequestPort = getRequestPort
         self.connectionLock = Lock()
         self.connections = {}
         self.onChangeCallback = None  # Callback for when a connection is added or removed
         self.ipaddress = socket.gethostbyname(socket.gethostname())
         self.sock = socket.socket()
         self.sock.bind((self.ipaddress, self.port))
-        self.getRequestSock = socket.socket()
-        self.getRequestSock.bind((self.ipaddress, self.getRequestPort))
+        # self.getRequestSock = socket.socket()
+        # self.getRequestSock.bind((self.ipaddress, self.getRequestPort))
         self.slideshowCompileFolder = "slideshowCompileFolder"
+        self._shuttingDown = False # Set to True upon deletion
+    def __del__(self):
+        self._shuttingDown = True
 
     def handleConnection(self, connectionSocket: socket.socket, addr: tuple):
 
         name = connectionSocket.recv(1024).decode()
+        sendLock = Lock()
         self.connectionLock.acquire()
-        self.connections[addr] = name, connectionSocket
+        self.connections[addr] = name, connectionSocket, sendLock
         self.connectionLock.release()
+        # Check if the connection is alive every few seconds.
+        while not self._shuttingDown:
+            sleep(5)
+            connectionEnded = False
+            sendLock.acquire()
+            try:
+                connectionSocket.settimeout(5)
+                connectionSocket.send("A".encode())
+                resp = connectionSocket.recv(1).decode()
+            except:
+                connectionEnded = True
+            finally:
+                sendLock.release()
+            connectionSocket.settimeout(None)
+            if connectionEnded:
+                self.connectionLock.acquire()
+                self.connections.pop(addr)
+                self.connectionLock.release()
+                break
 
-    def acceptGetRequestConnections(self, acceptor: socket.socket):
-        """
-        Handles get requests to get the list of billboard names
-        """
-        acceptor.listen(10)
-        while True:
-            connectionSocket, addr = acceptor.accept()
-            retString = ";;".join(list(self.connections.keys()))
-            if retString == "":
-                retString = "No Displays Connected"
-            connectionSocket.send(retString.encode())
-            connectionSocket.shutdown(socket.SHUT_RDWR)
-            connectionSocket.close()
+
+    # def acceptGetRequestConnections(self, acceptor: socket.socket):
+    #     """
+    #     Handles get requests to get the list of billboard names
+    #     """
+    #     acceptor.listen(10)
+    #     while not self._shuttingDown:
+    #         connectionSocket, addr = acceptor.accept()
+    #         retString = ";;".join(list(self.connections.keys()))
+    #         if retString == "":
+    #             retString = "No Displays Connected"
+    #         connectionSocket.send(retString.encode())
+    #         connectionSocket.shutdown(socket.SHUT_RDWR)
+    #         connectionSocket.close()
 
     def connectionUpdaterThread(self):
-        while True:
+        while not self._shuttingDown:
             self.updateLiveConnections()
             sleep(5)
+
     def updateLiveConnections(self):
         """
         Checks which threads are alive and updates the connection lock
         """
-        executor = ThreadPoolExecutor()
-        self.connectionLock.acquire()
-        futures = [(key, executor.submit(self.checkIfAlive, args=(self.connections[key][1],))) for key in self.connections]
-        executor.shutdown()
-        results = [(key, future.result()) for key, future in futures]
+        while not self._shuttingDown:
+            executor = ThreadPoolExecutor()
 
-        self.connectionLock.release()
+            futures = [(key, executor.submit(self.checkIfAlive, args=(self.connections[key][-1],))) for key in
+                       self.connections]
+            executor.shutdown()
+            results = [(key, future.result()) for key, future in futures]
+            self.connectionLock.acquire()
+            breakpoint()
+            self.connectionLock.release()
+
     @staticmethod
     def checkIfAlive(connectionSocket: socket.socket):
         try:
@@ -77,8 +108,9 @@ class Server(object):
     def run(self):
 
         Thread(target=self.acceptConnections, args=(self.sock,)).start()
-        Thread(target=self.acceptGetRequestConnections, args=(self.getRequestSock,)).start()
-        Thread(target=self.updateLiveConnections).start()
+        # Thread(target=self.acceptGetRequestConnections, args=(self.getRequestSock,)).start()
+        # Thread(target=self.updateLiveConnections).start()
+
     @staticmethod
     def receiveBytes(connectionSocket: socket.socket):
         """
@@ -106,17 +138,19 @@ class Server(object):
             connectionSocket.sendfile(f)
         self.connectionLock.release()
 
-        # breakpoint()
 
     @staticmethod
     def sendBytes(connectionSocket: socket.socket, information: bytes):
         connectionSocket.send(str(len(information)).encode())
         _ = connectionSocket.recv(1024)
         connectionSocket.send(information)
+
     def compileAndSendSlideshow(self, files, boards, title):
         breakpoint()
+
+
 class ServerInstance(object):
-    server = Server(9001, 9002)
+    server = Server(9001)
 
 
 #

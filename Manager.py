@@ -11,7 +11,7 @@ import shutil
 from time import sleep, time
 from Slideshow import Player, Slideshow
 import cv2
-
+from screeninfo import get_monitors
 
 class ConfigProps(Enum):
     SERVER_ADDR = "SERVER_ADDRESS"
@@ -61,6 +61,19 @@ class Manager(object):
         self._connectionSettingsChanged = True  # Updated when the server ip, server port, or host port change
         self._connectionStartTime = None  # Used to signal when the connection to the server has been reset
         self.needPlayReset = False
+        self._shuttingDown = False  # Set to true on deletion to close runnign threads
+    @staticmethod
+    def primaryScreenSettings(attr: str):
+        """
+        Args:
+            attr: 'width' or 'height'
+        Returns: the attribute of the primary screen
+        """
+        primary = [x for x in get_monitors() if x.is_primary][0]
+        try:
+            return getattr(primary, attr)
+        except:
+            return 100
 
     @property
     def player(self):
@@ -74,7 +87,7 @@ class Manager(object):
             self.player.stop()
             if self.player.slideshow is not None:
                 self.player.slideshow.collapse()
-                while not self.player.isStopped:
+                while not self.player.isStopped and not self._shuttingDown:
                     sleep(1)
                 cv2.destroyAllWindows()
         self._player = value
@@ -171,18 +184,20 @@ class Manager(object):
         for key in keyAttrDict:
             if key in valueDict:
                 attr = keyAttrDict[key]
+                if attr in ['width', 'height'] and valueDict[key] is None:
+                    # Get primary screen default
+                    valueDict[key] = self.primaryScreenSettings(attr)
                 setattr(self, attr, valueDict[key])
 
     def saveConfig(self):
         with open(self.configPath, "w") as f:
             json.dump(self.config, f, indent=4)
-
-    def loadConfig(self, path=None):
+    @staticmethod
+    def loadConfig(path):
         """
-        :param path: If none, will load from self.configPath (self.workingDir/Config.json) else will load from path
+        :param path: Will load from path
         :return: The config dict
         """
-        path = path if path is not None else self.configPath
         with open(path, "r") as f:
             config = json.load(f)
         return config
@@ -213,7 +228,6 @@ class Manager(object):
                 self.needPlayReset = False
                 self.resetPlayer()
 
-
             if self._connectionSettingsChanged:
                 self._connectionSettingsChanged = False
                 self.resetConnection()
@@ -228,15 +242,15 @@ class Manager(object):
     def receptionHandler(self, connectionSocket: socket.socket, startTime):
         connectionSocket.settimeout(20)
         try:
-            while self._connectionStartTime == startTime:
+            while self._connectionStartTime == startTime and not self._shuttingDown:
                 messageType = connectionSocket.recv(1).decode()
-                if messageType == "A":
+                if messageType == "A":  # Asking if alive
                     connectionSocket.send("Y".encode())
                 else:
                     if messageType == "F":
                         # Recieving new slideshow
                         with open(self.zippedSlideshowPath, "wb") as f:
-                            while True:
+                            while not self._shuttingDown:
                                 newBytes = connectionSocket.recv(1024)
                                 if not newBytes:
                                     break
@@ -258,7 +272,7 @@ class Manager(object):
         """
         thisStartTime = self._connectionStartTime
         if self.serverAddr is not None and self.serverPort is not None and self.hostPort is not None:
-            while thisStartTime == self._connectionStartTime:
+            while thisStartTime == self._connectionStartTime and not self._shuttingDown:
                 connectionSocket = socket.socket()
                 try:
                     connectionSocket.bind((self.ipaddress, self.hostPort))
@@ -275,18 +289,25 @@ class Manager(object):
         Thread(target=self.run).start()
 
     def run(self):
+        print(f"Display Manager running on port {self.hostPort}")
+        self._shuttingDown = False
         self._connectionSettingsChanged = True
-        while True:
+        while not self._shuttingDown:
             self.refresh()
             sleep(1)
+
     @staticmethod
     def sendBytes(connectionSocket: socket.socket, information: bytes):
         connectionSocket.send(str(len(information)).encode())
         _ = connectionSocket.recv(1024)
         connectionSocket.send(information)
 
-    def __del__(self):
+    def shutdown(self):
         self._connectionStartTime = time()
+        self._shuttingDown = True
+
+    def __del__(self):
+        self.shutdown()
 
 
 if __name__ == '__main__':
