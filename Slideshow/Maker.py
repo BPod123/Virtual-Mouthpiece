@@ -6,21 +6,23 @@ from Slideshow.Format_Slideshow import emptyDirectory
 from concurrent.futures import ThreadPoolExecutor
 
 
-def saveFile(src, dest, durationSeconds):
-    shutil.copy(src, dest)
+def saveFile(file, dest, durationSeconds):
+    with open(dest, "wb") as f:
+        f.write(file.read())
     return {'path': os.path.basename(dest), 'seconds': durationSeconds}
 
 
-def compileSlideshow(folderPath, pathSeconds):
+def compileSlideshow(folderPath, fileSeconds, title: str):
     """
     Compiles slideshow folder into a zipped folder and remove folderPath
 
     :param folderPath: The name of the folder you want to store the slideshow in
-    :param pathSeconds: iterable tuples (src to .npy file, amount of time to display)
+    :param fileSeconds: iterable tuples (file reader object, seconds to display for)
     Creates a zipped folder with all the images/videos
     In the folder, there will be a json file named info.json that contains a list of dicts. Inside each dict is a mapping
     "src": relative src of the file withing the folder, "seconds": the amount to seconds to display item for
     :return The src of the zipped workingDir
+    :param title: The title of the slideshow
     """
     if not os.path.isdir(folderPath):
         os.mkdir(folderPath)
@@ -28,12 +30,12 @@ def compileSlideshow(folderPath, pathSeconds):
     savedInfoFutures = []
 
     executor = ThreadPoolExecutor()
-    for src, seconds in pathSeconds:
-        dest = os.path.basename(src)
+    for file, seconds in fileSeconds:
+        dest = os.path.basename(file.filename)
         # Copy files to new destination and append items list
-        savedInfoFutures.append(executor.submit(saveFile, src, os.path.join(folderPath, dest), seconds))
+        savedInfoFutures.append(executor.submit(saveFile, file, os.path.join(folderPath, dest), seconds))
     executor.shutdown()
-    info = [x.result() for x in savedInfoFutures]
+    info = {'title': title, 'info': [x.result() for x in savedInfoFutures]}
     infoPath = os.path.join(folderPath, "info.json")
 
     # saveFile = os.src.join(folderPath, "info.json")

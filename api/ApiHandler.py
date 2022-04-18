@@ -32,6 +32,7 @@ class ApiHandler(Resource):
 
     print(runtimes)
     print(images)
+    ServerInstance.server.compileAndSendSlideshow(args)
     # note, the post req from frontend needs to match the strings here (e.g. 'type and 'message')
 
 
@@ -41,7 +42,7 @@ class ApiHandler(Resource):
 
     # resizeImage(src, dest, 600, 200)
     # sendFile(dest)
-    # ServerInstance.server.compileAndSendSlideshow(args.files, args.board, args.title)
+
 
     # if not dest.endswith(".gif"):
     #   im = Image.open(dest)

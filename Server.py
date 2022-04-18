@@ -4,6 +4,8 @@ from math import ceil, log2
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 from Slideshow.Maker import compileSlideshow
+
+
 class Server(object):
     def __init__(self, port, getRequestPort):
         self.port = port
@@ -43,17 +45,20 @@ class Server(object):
         while True:
             self.updateLiveConnections()
             sleep(5)
+
     def updateLiveConnections(self):
         """
         Checks which threads are alive and updates the connection lock
         """
         executor = ThreadPoolExecutor()
         self.connectionLock.acquire()
-        futures = [(key, executor.submit(self.checkIfAlive, args=(self.connections[key][1],))) for key in self.connections]
+        futures = [(key, executor.submit(self.checkIfAlive, args=(self.connections[key][1],))) for key in
+                   self.connections]
         executor.shutdown()
         results = [(key, future.result()) for key, future in futures]
 
         self.connectionLock.release()
+
     @staticmethod
     def checkIfAlive(connectionSocket: socket.socket):
         try:
@@ -79,6 +84,7 @@ class Server(object):
         Thread(target=self.acceptConnections, args=(self.sock,)).start()
         Thread(target=self.acceptGetRequestConnections, args=(self.getRequestSock,)).start()
         Thread(target=self.updateLiveConnections).start()
+
     @staticmethod
     def receiveBytes(connectionSocket: socket.socket):
         """
@@ -113,8 +119,14 @@ class Server(object):
         connectionSocket.send(str(len(information)).encode())
         _ = connectionSocket.recv(1024)
         connectionSocket.send(information)
-    # def compileAndSendSlideshow(self, files, boards, title):
-        # breakpoint()
+
+    def compileAndSendSlideshow(self, args):
+        files, boards, title, runTimes = args.images, args.boards, args.title, args.runtimes
+        fileSeconds = zip(files, runTimes)
+        compileSlideshow(self.slideshowCompileFolder, fileSeconds, title)
+        breakpoint()
+
+
 class ServerInstance(object):
     server = Server(9001, 9002)
 
