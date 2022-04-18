@@ -224,13 +224,13 @@ class Manager(object):
                 json.dump(self.config, f, indent=4)
             self.config = newConfig
             self.saveConfig()
-            if self.needPlayReset:
-                self.needPlayReset = False
-                self.resetPlayer()
 
             if self._connectionSettingsChanged:
                 self._connectionSettingsChanged = False
                 self.resetConnection()
+        elif self.needPlayReset:
+            self.needPlayReset = False
+            self.resetPlayer()
 
     def resetConnection(self):
         """
@@ -240,7 +240,7 @@ class Manager(object):
         Thread(target=self.manageConnection).start()
 
     def receptionHandler(self, connectionSocket: socket.socket, startTime):
-        connectionSocket.settimeout(20)
+        connectionSocket.settimeout(5)
         try:
             while self._connectionStartTime == startTime and not self._shuttingDown:
                 messageType = connectionSocket.recv(1).decode()
@@ -249,12 +249,19 @@ class Manager(object):
                 else:
                     if messageType == "F":
                         # Recieving new slideshow
-                        with open(self.zippedSlideshowPath, "wb") as f:
-                            while not self._shuttingDown:
-                                newBytes = connectionSocket.recv(1024)
-                                if not newBytes:
-                                    break
-                                f.write(newBytes)
+                        try:
+                            connectionSocket.settimeout(2)
+                            # The reciever will keep receiving the slideshow until it is done sending, at which point
+                            # it will tell the sender that it is done.
+                            # Since the sender goes back to checking if the connection is alive, the manager must inform
+                            # the server that it has finished recieving the slideshow.
+                            with open(self.zippedSlideshowPath, "wb") as f:
+                                while not self._shuttingDown:
+                                    newBytes = connectionSocket.recv(1024)
+                                    f.write(newBytes)
+                        except:
+                            connectionSocket.settimeout(5)
+                            connectionSocket.send("Y".encode())
                         self.needPlayReset = True
 
                     elif messageType == "N":

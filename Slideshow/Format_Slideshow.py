@@ -73,7 +73,8 @@ def formatSlideshow(zippedSrc, unzippedDest, width, height):
     with open(infoPath, "r") as f:
         data = json.load(f)
     os.remove(infoPath)
-
+    title = data['title']
+    data = data['info']
     finalData = [x.copy() for x in data]
     # Update all the file paths in data
     for i in range(len(data)):
@@ -99,6 +100,7 @@ def formatSlideshow(zippedSrc, unzippedDest, width, height):
     #     finalData[i]['numFrames'], finalData[i]['fps'] = numFrames, fps
     emptyDirectory(unzippedUnformatedDir)
     # os.removedirs(unzippedUnformatedDir)
+    finalData = {'title': title, 'info': finalData}
     with open(newInfoPath, "w") as f:
         json.dump(finalData, f, indent=4)
 

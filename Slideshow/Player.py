@@ -14,7 +14,8 @@ class PlayerState(Enum):
 
 class Player(object):
     def __init__(self, displayName, transitionDuration):
-        self.displayName = displayName
+        self._slideshowName = None
+        self._thisDisplayName = displayName
         self.transitionDuration = transitionDuration
         self.reader = None
         self._state = PlayerState.STOPPED
@@ -23,6 +24,12 @@ class Player(object):
         self._slideshow = None
         self._playStartTime = None
         self.curSlide = 0
+    @property
+    def slideshowName(self):
+        if self.slideshow is not None and self.slideshow.info['title'] is not None:
+            return self.slideshow.info['title']
+        else:
+            return self._thisDisplayName
 
     @property
     def isStopped(self):
@@ -34,6 +41,7 @@ class Player(object):
 
     def setSlideshow(self, value):
         self.slideshow = value
+
 
     @slideshow.setter
     def slideshow(self, value):
@@ -49,7 +57,7 @@ class Player(object):
 
         self._slideshow = value
         self.slideshow.unzipAndFormat()
-        self.reader = Reader(self.displayName, self.slideshow, self.transitionDuration)
+        self.reader = Reader(self.slideshowName, self.slideshow, self.transitionDuration)
         if currState == PlayerState.PLAYING:
             self.playThread.start()
 
@@ -113,16 +121,18 @@ class Player(object):
 
         self.state = PlayerState.PLAYING
         self._playStartTime = time()
-        Thread(target=self.waitForTransitionThread,
-               args=(self.reader.slideshow.info[self.reader.fileIndex]['seconds'],)).start()
+        if len(self.slideshow.info['info']) > 1:
+            Thread(target=self.waitForTransitionThread,
+                   args=(self.reader.slideshow.info['info'][self.reader.fileIndex]['seconds'],)).start()
         while self.state == PlayerState.PLAYING or self.state == PlayerState.CHANGING_SLIDE:
             while self.state == PlayerState.CHANGING_SLIDE:
                 sleep(0.001)
             if self.curSlide != self.reader.fileIndex:
                 # Transition has taken place. Time to start the next wait
                 self.curSlide = self.reader.fileIndex
-                Thread(target=self.waitForTransitionThread,
-                       args=(self.reader.slideshow.info[self.reader.fileIndex]['seconds'],)).start()
+                if len(self.slideshow.info['info']):
+                    Thread(target=self.waitForTransitionThread,
+                           args=(self.reader.slideshow.info['info'][self.reader.fileIndex]['seconds'],)).start()
             if self.state == PlayerState.PLAYING:
                 self.reader.read()
 

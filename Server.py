@@ -8,17 +8,17 @@ from Slideshow.Maker import compileSlideshow
 
 
 class Server(object):
-    def __init__(self, port, getRequestPort):
+    def __init__(self, port):
         self.port = port
-        self.getRequestPort = getRequestPort
+        # self.getRequestPort = getRequestPort
         self.connectionLock = Lock()
         self.connections = {}
         self.onChangeCallback = None  # Callback for when a connection is added or removed
         self.ipaddress = socket.gethostbyname(socket.gethostname())
         self.sock = socket.socket()
         self.sock.bind((self.ipaddress, self.port))
-        self.getRequestSock = socket.socket()
-        self.getRequestSock.bind((self.ipaddress, self.getRequestPort))
+        # self.getRequestSock = socket.socket()
+        # self.getRequestSock.bind((self.ipaddress, self.getRequestPort))
         self.slideshowCompileFolder = "slideshowCompileFolder"
         self._shuttingdown = False
 
@@ -37,50 +37,36 @@ class Server(object):
         self.connections[addr] = name, connectionSocket, sockLock
         self.connectionLock.release()
         while self.running:
+            sleep(2)
             sockLock.acquire()
             isAlive = self.checkIfAlive(connectionSocket)
             if not isAlive:
                 self.connectionLock.acquire()
                 self.connections.pop(addr)
                 self.connectionLock.release()
+                sockLock.release()
                 break
             sockLock.release()
-            sleep(5)
-        if self.running:
-            sockLock.release()
 
 
-    def acceptGetRequestConnections(self, acceptor: socket.socket):
-        """
-        Handles get requests to get the list of billboard names
-        """
-        acceptor.listen(10)
-        while True:
-            connectionSocket, addr = acceptor.accept()
-            retString = ";;".join(list(self.connections.keys()))
-            if retString == "":
-                retString = "No Displays Connected"
-            connectionSocket.send(retString.encode())
-            connectionSocket.shutdown(socket.SHUT_RDWR)
-            connectionSocket.close()
 
-    # def connectionUpdaterThread(self):
+
+
+
+    # def acceptGetRequestConnections(self, acceptor: socket.socket):
+    #     """
+    #     Handles get requests to get the list of billboard names
+    #     """
+    #     acceptor.listen(10)
     #     while True:
-    #         self.updateLiveConnections()
-    #         sleep(5)
-    #
-    # def updateLiveConnections(self):
-    #     """
-    #     Checks which threads are alive and updates the connection lock
-    #     """
-    #     executor = ThreadPoolExecutor()
-    #     self.connectionLock.acquire()
-    #     futures = [(key, executor.submit(self.checkIfAlive, args=(self.connections[key][1],))) for key in
-    #                self.connections]
-    #     executor.shutdown()
-    #     results = [(key, future.result()) for key, future in futures]
-    #
-    #     self.connectionLock.release()
+    #         connectionSocket, addr = acceptor.accept()
+    #         retString = ";;".join(list(self.connections.keys()))
+    #         if retString == "":
+    #             retString = "No Displays Connected"
+    #         connectionSocket.send(retString.encode())
+    #         connectionSocket.shutdown(socket.SHUT_RDWR)
+    #         connectionSocket.close()
+
 
     @staticmethod
     def checkIfAlive(connectionSocket: socket.socket):
@@ -105,7 +91,7 @@ class Server(object):
     def run(self):
 
         Thread(target=self.acceptConnections, args=(self.sock,)).start()
-        Thread(target=self.acceptGetRequestConnections, args=(self.getRequestSock,)).start()
+        # Thread(target=self.acceptGetRequestConnections, args=(self.getRequestSock,)).start()
         # Thread(target=self.updateLiveConnections).start()
 
     @staticmethod
@@ -115,7 +101,8 @@ class Server(object):
         connectionSocket.send(information)
 
     @staticmethod
-    def sendSlideshow(connectionSocket, socketLock, zippedFolderPath):
+    def sendSlideshow(conInfo, zippedFolderPath):
+        name, connectionSocket, socketLock = conInfo[:3]
         ex = None
         socketLock.acquire()
         try:
@@ -124,6 +111,15 @@ class Server(object):
                 while True:
                     bytes = file.read(1024)
                     if not bytes:
+                        # The server will wait for acknowledgement from the display manager that it has finished
+                        # recieving the file
+                        connectionSocket.settimeout(5)
+                        try:
+                            recv = connectionSocket.recv(1).decode()
+                        except:
+                            raise Exception(f"{name} did not send confirmation that it received the slideshow.")
+                        finally:
+                            connectionSocket.settimeout(None)
                         break
                     connectionSocket.send(bytes)
         except Exception as e:
@@ -137,12 +133,12 @@ class Server(object):
         fileSeconds = zip(files, runTimes)
         zippedFolderPath = compileSlideshow(self.slideshowCompileFolder, fileSeconds, title)
         self.connectionLock.acquire()
-        conSocket_Locks = [(self.connections[addr][1], self.connections[addr][2]) for addr in self.connections if
+        conInfos = [self.connections[addr] for addr in self.connections if
                            self.connections[addr][0] in boards]
         self.connectionLock.release()
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(self.sendSlideshow, conSockLock[0], conSockLock[1], zippedFolderPath) for conSockLock
-                   in conSocket_Locks]
+        futures = [executor.submit(self.sendSlideshow, conInfo, zippedFolderPath) for conInfo
+                   in conInfos]
         executor.shutdown()
         os.remove(zippedFolderPath)
         results = [future.result() for future in futures]
@@ -151,7 +147,7 @@ class Server(object):
 
 
 class ServerInstance(object):
-    server = Server(9001, 9002)
+    server = Server(9001)
 
 
 #

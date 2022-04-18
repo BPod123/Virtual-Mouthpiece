@@ -72,7 +72,7 @@ class Slideshow(object):
         if self.info is None:
             return
         self.deleteLock.acquire()
-        for slideItem in self.info:
+        for slideItem in self.info['info']:
             fileName = os.path.basename(slideItem['path'])
             path = os.path.join(self.workingDir, fileName)
             try:
