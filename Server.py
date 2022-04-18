@@ -20,13 +20,35 @@ class Server(object):
         self.getRequestSock = socket.socket()
         self.getRequestSock.bind((self.ipaddress, self.getRequestPort))
         self.slideshowCompileFolder = "slideshowCompileFolder"
+        self._shuttingdown = False
+
+    @property
+    def running(self):
+        return not self._shuttingdown
+
+    def shutdown(self):
+        self._shuttingdown = True
 
     def handleConnection(self, connectionSocket: socket.socket, addr: tuple):
 
         name = connectionSocket.recv(1024).decode()
+        sockLock = Lock()
         self.connectionLock.acquire()
-        self.connections[addr] = name, connectionSocket, Lock()
+        self.connections[addr] = name, connectionSocket, sockLock
         self.connectionLock.release()
+        while self.running:
+            sockLock.acquire()
+            isAlive = self.checkIfAlive(connectionSocket)
+            if not isAlive:
+                self.connectionLock.acquire()
+                self.connections.pop(addr)
+                self.connectionLock.release()
+                break
+            sockLock.release()
+            sleep(5)
+        if self.running:
+            sockLock.release()
+
 
     def acceptGetRequestConnections(self, acceptor: socket.socket):
         """
@@ -63,7 +85,7 @@ class Server(object):
     @staticmethod
     def checkIfAlive(connectionSocket: socket.socket):
         try:
-            connectionSocket.settimeout(5)
+            connectionSocket.settimeout(2)
             connectionSocket.send("A".encode())
             resp = connectionSocket.recv(1).decode()
             connectionSocket.settimeout(None)
@@ -87,39 +109,11 @@ class Server(object):
         # Thread(target=self.updateLiveConnections).start()
 
     @staticmethod
-    def receiveBytes(connectionSocket: socket.socket):
-        """
-        :param connectionSocket: socket connected to a sender
-        :return: any information sent by sender
-        """
-        while True:
-            recv = connectionSocket.recv(1024)
-            if not recv:
-                break
-            yield recv
-        # numBytes = int()
-        #
-        # recv = connectionSocket.recv(1024).decode()
-        # connectionSocket.send("".encode())
-        # twoPow = int(2 ** ceil(log2(14)))
-        # bufferSize = twoPow if twoPow - numBytes < 2048 else numBytes + 2048
-        information = connectionSocket.recv(1024)
-        return information
-
-    # def sendSlideshow(self, name, zipPath: str):
-    #     self.connectionLock.acquire()
-    #     connectionSocket = self.connections[name][1]
-    #     with open(zipPath, 'rb') as f:
-    #         connectionSocket.sendfile(f)
-    #     self.connectionLock.release()
-
-        # breakpoint()
-
-    @staticmethod
     def sendBytes(connectionSocket: socket.socket, information: bytes):
         connectionSocket.send(str(len(information)).encode())
         _ = connectionSocket.recv(1024)
         connectionSocket.send(information)
+
     @staticmethod
     def sendSlideshow(connectionSocket, socketLock, zippedFolderPath):
         ex = None
@@ -143,10 +137,12 @@ class Server(object):
         fileSeconds = zip(files, runTimes)
         zippedFolderPath = compileSlideshow(self.slideshowCompileFolder, fileSeconds, title)
         self.connectionLock.acquire()
-        conSocket_Locks= [(self.connections[addr][1], self.connections[addr][2]) for addr in self.connections if self.connections[addr][0] in boards]
+        conSocket_Locks = [(self.connections[addr][1], self.connections[addr][2]) for addr in self.connections if
+                           self.connections[addr][0] in boards]
         self.connectionLock.release()
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(self.sendSlideshow, conSockLock[0], conSockLock[1], zippedFolderPath) for conSockLock in conSocket_Locks]
+        futures = [executor.submit(self.sendSlideshow, conSockLock[0], conSockLock[1], zippedFolderPath) for conSockLock
+                   in conSocket_Locks]
         executor.shutdown()
         os.remove(zippedFolderPath)
         results = [future.result() for future in futures]
