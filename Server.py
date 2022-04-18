@@ -1,3 +1,4 @@
+import os
 import socket
 from threading import Thread, Lock
 from math import ceil, log2
@@ -24,7 +25,7 @@ class Server(object):
 
         name = connectionSocket.recv(1024).decode()
         self.connectionLock.acquire()
-        self.connections[addr] = name, connectionSocket
+        self.connections[addr] = name, connectionSocket, Lock()
         self.connectionLock.release()
 
     def acceptGetRequestConnections(self, acceptor: socket.socket):
@@ -41,23 +42,23 @@ class Server(object):
             connectionSocket.shutdown(socket.SHUT_RDWR)
             connectionSocket.close()
 
-    def connectionUpdaterThread(self):
-        while True:
-            self.updateLiveConnections()
-            sleep(5)
-
-    def updateLiveConnections(self):
-        """
-        Checks which threads are alive and updates the connection lock
-        """
-        executor = ThreadPoolExecutor()
-        self.connectionLock.acquire()
-        futures = [(key, executor.submit(self.checkIfAlive, args=(self.connections[key][1],))) for key in
-                   self.connections]
-        executor.shutdown()
-        results = [(key, future.result()) for key, future in futures]
-
-        self.connectionLock.release()
+    # def connectionUpdaterThread(self):
+    #     while True:
+    #         self.updateLiveConnections()
+    #         sleep(5)
+    #
+    # def updateLiveConnections(self):
+    #     """
+    #     Checks which threads are alive and updates the connection lock
+    #     """
+    #     executor = ThreadPoolExecutor()
+    #     self.connectionLock.acquire()
+    #     futures = [(key, executor.submit(self.checkIfAlive, args=(self.connections[key][1],))) for key in
+    #                self.connections]
+    #     executor.shutdown()
+    #     results = [(key, future.result()) for key, future in futures]
+    #
+    #     self.connectionLock.release()
 
     @staticmethod
     def checkIfAlive(connectionSocket: socket.socket):
@@ -83,7 +84,7 @@ class Server(object):
 
         Thread(target=self.acceptConnections, args=(self.sock,)).start()
         Thread(target=self.acceptGetRequestConnections, args=(self.getRequestSock,)).start()
-        Thread(target=self.updateLiveConnections).start()
+        # Thread(target=self.updateLiveConnections).start()
 
     @staticmethod
     def receiveBytes(connectionSocket: socket.socket):
@@ -105,12 +106,12 @@ class Server(object):
         information = connectionSocket.recv(1024)
         return information
 
-    def sendSlideshow(self, name, zipPath: str):
-        self.connectionLock.acquire()
-        connectionSocket = self.connections[name][1]
-        with open(zipPath, 'rb') as f:
-            connectionSocket.sendfile(f)
-        self.connectionLock.release()
+    # def sendSlideshow(self, name, zipPath: str):
+    #     self.connectionLock.acquire()
+    #     connectionSocket = self.connections[name][1]
+    #     with open(zipPath, 'rb') as f:
+    #         connectionSocket.sendfile(f)
+    #     self.connectionLock.release()
 
         # breakpoint()
 
@@ -119,12 +120,38 @@ class Server(object):
         connectionSocket.send(str(len(information)).encode())
         _ = connectionSocket.recv(1024)
         connectionSocket.send(information)
+    @staticmethod
+    def sendSlideshow(connectionSocket, socketLock, zippedFolderPath):
+        ex = None
+        socketLock.acquire()
+        try:
+            connectionSocket.send("F".encode())
+            with open(zippedFolderPath, "rb") as file:
+                while True:
+                    bytes = file.read(1024)
+                    if not bytes:
+                        break
+                    connectionSocket.send(bytes)
+        except Exception as e:
+            ex = e
+        finally:
+            socketLock.release()
+        return ex
 
     def compileAndSendSlideshow(self, args):
-        files, boards, title, runTimes = args.images, args.boards, args.title, args.runtimes
+        files, boards, title, runTimes = args.images, set(args.boards), args.title, args.runtimes
         fileSeconds = zip(files, runTimes)
-        compileSlideshow(self.slideshowCompileFolder, fileSeconds, title)
-        breakpoint()
+        zippedFolderPath = compileSlideshow(self.slideshowCompileFolder, fileSeconds, title)
+        self.connectionLock.acquire()
+        conSocket_Locks= [(self.connections[addr][1], self.connections[addr][2]) for addr in self.connections if self.connections[addr][0] in boards]
+        self.connectionLock.release()
+        executor = ThreadPoolExecutor()
+        futures = [executor.submit(self.sendSlideshow, conSockLock[0], conSockLock[1], zippedFolderPath) for conSockLock in conSocket_Locks]
+        executor.shutdown()
+        os.remove(zippedFolderPath)
+        results = [future.result() for future in futures]
+        exceptions = [ex for ex in results if ex is not None]
+        return exceptions
 
 
 class ServerInstance(object):

@@ -9,15 +9,14 @@ def ManagerThread():
     manager.start()
     pass
 
-# def serverThread():
-#     port = 9005
-#     slideshowPath = "myshow.zip"
-#     server = Server(port)
-#     server.start()
-#     sleep(5)
-#     # server.sendSlideshow("Display Test", slideshowPath)
-
-
+def testManagerOnOffOn(manager, waitTime):
+    manager.start()
+    sleep(waitTime)
+    print("Shutting down manager")
+    manager.shutdown()
+    sleep(waitTime)
+    print("Restarting manager")
+    manager.start()
 
 
 if __name__ == '__main__':
@@ -35,7 +34,8 @@ if __name__ == '__main__':
     manager2 = Manager("BACKEND_TESTS/Manager2", "BACKEND_TESTS/Config2.json")
 
     manager1.start()
-    manager2.start()
+    Thread(target=testManagerOnOffOn, args=(manager2, 10)).start()
+    # manager2.start()
     startServerSide()
 
     z = 3
