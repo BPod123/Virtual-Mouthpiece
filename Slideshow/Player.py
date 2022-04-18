@@ -1,5 +1,5 @@
 import Slideshow.Slideshow
-from Slideshow.Reader import Reader, showImage
+from Slideshow.Reader import Reader
 from enum import Enum
 from threading import Thread
 from time import time, sleep
@@ -88,13 +88,13 @@ class Player(object):
 
     def transition(self):
         self.state = PlayerState.CHANGING_SLIDE
-        self.curSlide = self.reader.fileIndex
         self.reader.transition()
+        # self.curSlide = self.reader.fileIndex
         self.state = PlayerState.PLAYING
 
     def waitForTransitionThread(self, waitTime):
         wait_playStartTime = self._playStartTime
-        sleep(waitTime)
+        sleep(float(waitTime))
         if self._playStartTime != wait_playStartTime or self.state != PlayerState.PLAYING:
             # The player stopped since this thread went to sleep. Do nothing
             return
@@ -132,7 +132,7 @@ class Player(object):
                 self.curSlide = self.reader.fileIndex
                 if len(self.slideshow.info['info']):
                     Thread(target=self.waitForTransitionThread,
-                           args=(self.reader.slideshow.info['info'][self.reader.fileIndex]['seconds'],)).start()
+                           args=(float(self.reader.slideshow.info['info'][self.reader.fileIndex]['seconds']),)).start()
             if self.state == PlayerState.PLAYING:
                 self.reader.read()
 

@@ -7,7 +7,8 @@ from abc import ABCMeta, abstractmethod
 from enum import Enum
 from Slideshow.Format_Slideshow import getGifFrames
 from PIL import Image
-
+from time import time, sleep
+from screeninfo import get_monitors
 
 class FileType(Enum):
     IMAGE = 0
@@ -204,6 +205,7 @@ class Reader(object):
         self.displayName = dislpayName
         self.slideshow = slideshow
         self.fileIndex = 0
+        self._firstImage = True # For displaying the first image
         if not self.slideshow.isUnzipped:
             self.slideshow.unzipAndFormat()
         self.reader = None
@@ -219,7 +221,7 @@ class Reader(object):
     def nextFileReader(self):
         fileIndex = self.fileIndex + 1 if self.reader is not None and self.fileIndex < len(
             self.slideshow.info) - 1 else 0
-        reader = FileReader(self.slideshow.info['info'][self.fileIndex], self.movingAvg)
+        reader = FileReader(self.slideshow.info['info'][fileIndex], self.movingAvg)
         return reader, fileIndex
 
     def transition(self):
@@ -284,14 +286,42 @@ class Reader(object):
 
     def read(self):
         nextFrame, millis = self.__next__()
-        from time import time
-        start = time()
-        showImage(self.displayName, nextFrame, millis)
-        duration = time() - start
-        self.movingAvg.update(duration)
+        if self._firstImage:
+            self.showFirstImage(self.displayName, nextFrame, millis)
+            self._firstImage = False
+        else:
+            start = time()
+            self.showImage(self.displayName, nextFrame, millis)
+            duration = time() - start
+            self.movingAvg.update(duration)
+    @staticmethod
+    def showImage(displayName, frame, milis: int):
+        cv2.imshow(displayName, frame)
+        if cv2.waitKey(milis) & 0xFF == ord('q'):
+            return
+
+    def showFirstImage(self, displayName, frame, millis: int):
+        """
+        Like showImage, except that it positions the window as well.
+        """
+        cv2.namedWindow(displayName, cv2.WND_PROP_FULLSCREEN)
+        cv2.setWindowProperty(displayName, cv2.WND_PROP_TOPMOST, 1)
+        cv2.setWindowProperty(displayName, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+        self.showImage(displayName, frame, millis)
 
 
-def showImage(displayName, frame, milis: int):
-    cv2.imshow(displayName, frame)
-    if cv2.waitKey(milis):  # & 0xFF == ord('q'):
-        return
+
+
+    @staticmethod
+    def cv2Wait(milis):
+        if milis > 30:
+            remainingMilis = milis - 30
+            if cv2.waitKey(30):
+                pass # Allow time to move the window if it is the first time showing the image
+        else:
+            remiainingMilis = milis
+        if cv2.waitKey(milis) & 0xFF == ord('q'):
+            return
+
+
+
