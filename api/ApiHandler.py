@@ -13,38 +13,39 @@ class ApiHandler(Resource):
     return resString
 
   def post(self):
-    print(self)
+    # print(self)
     parser = reqparse.RequestParser()
-    parser.add_argument('files', type=str, location='form')
-    parser.add_argument('board', type=str, location='form')
+    # parser.add_argument('files', type=list, location='form', action='append')
+    parser.add_argument('boards', type=str, location='form', action='append')
     parser.add_argument('title', type=str, location='form')
+    parser.add_argument('runtimes', type=str, location='form', action='append')
+    parser.add_argument('images', type=FileStorage, location='files', action='append')
 
 
     args = parser.parse_args()
 
     print(args)
+    boards = args['boards']
+    title = args['title']
+    runtimes = args['runtimes']
+    images = args['images']
+
+    print(runtimes)
+    print(images)
     # note, the post req from frontend needs to match the strings here (e.g. 'type and 'message')
 
-    slideshow_title = args['title']
-    image_files = args['files'].split(',')
-    board_names = args['board'].split(',')
+
     # src = "Resize Demo/Sample Files/{0}".format(args['file'].filename)
     # dest = "Resize Demo/Resized Files/{0}".format(args['file'].filename)
 
 
     # resizeImage(src, dest, 600, 200)
     # sendFile(dest)
-    print("slideshow title:", slideshow_title)
-    print("board name:", board_names)
-    print("image files:", image_files)
-    ServerInstance.server.compileAndSendSlideshow(args.files, args.board, args.title)
+    # ServerInstance.server.compileAndSendSlideshow(args.files, args.board, args.title)
 
     # if not dest.endswith(".gif"):
     #   im = Image.open(dest)
       # im.show()
-
-
-
 
     # image_file.save("your_file_name.jpg")
 

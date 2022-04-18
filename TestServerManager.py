@@ -1,29 +1,21 @@
-import time
-
 from Manager import Manager
 from Slideshow.Maker import compileSlideshow
 from time import sleep
 from threading import Thread
-from Server_Main import main as startServerSide, ServerInstance
+from Server_Main import main as startServerSide
+
 def ManagerThread():
     manager = Manager('BACKEND_TESTS', "Config.json")
     manager.start()
     pass
 
-def shutoffManagerAfterWait(mangager: Manager, waitTime):
-    sleep(waitTime)
-    print("Stopping Manager")
-    mangager.shutdown()
-    sleep(30)
-    print("Restarting Manager")
-    mangager._shuttingDown = False
-    mangager.start()
-    sleep(5)
-
-
-def runTests(tests: list):
-    for test, args in tests:
-        test(*args)
+# def serverThread():
+#     port = 9005
+#     slideshowPath = "myshow.zip"
+#     server = Server(port)
+#     server.start()
+#     sleep(5)
+#     # server.sendSlideshow("Display Test", slideshowPath)
 
 
 
@@ -44,11 +36,6 @@ if __name__ == '__main__':
 
     manager1.start()
     manager2.start()
-    tests = [
-        (shutoffManagerAfterWait, (manager2, 10))
-    ]
-    Thread(target=runTests, args=(tests))
-    Thread(target=shutoffManagerAfterWait, args=(manager2, 10)).start()
     startServerSide()
 
     z = 3
