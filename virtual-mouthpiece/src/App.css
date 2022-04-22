@@ -104,7 +104,6 @@ img {
 }
 .timeBox {
   margin-left: 10px;
-  display: block;
 }
 .timeBox:focus {
   background-color: lightgray;
@@ -114,6 +113,17 @@ img {
   display: inline-block;
   text-align: center;
   width: auto;
+}
+.deleteButton {
+  background-color: #ee4c50;
+  text-align: center;
+  font-weight: 400;
+  font-size: small;
+  margin-left: 5px;
+  padding: 3px;
+}
+.timeDeleteSpan {
+  display: block;
 }
 /******************************************************/
 
@@ -194,4 +204,13 @@ img {
 }
 .slideshowPreview {
   background-color: #21222a;
+  padding: 20px;
+}
+.titleBox:focus {
+  background-color: lightcyan;
+}
+
+.titleBox {
+  font-size: large;
+  font-weight: 600;
 }

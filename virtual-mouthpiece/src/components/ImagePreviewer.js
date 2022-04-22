@@ -1,7 +1,7 @@
 import React from "react";
 
 export default function ImagePreviewer(props) {
-  const { url, image, showTime, onRuntimeChange } = props;
+  const { data, url, image, showTime, onRuntimeChange, deleteMethod } = props;
   if (image && showTime) {
     return (
       <div className="imagePreviewer">
@@ -9,6 +9,7 @@ export default function ImagePreviewer(props) {
           <img src={url} alt="uploaded" />
           <p className="previewText">{image.name}</p>
         </span>
+        <span className="timeDeleteSpan">
         <input
           type="text"
           className="timeBox"
@@ -16,6 +17,12 @@ export default function ImagePreviewer(props) {
         //   defaultValue={5}
           onChange={(e) => onRuntimeChange(url, e.target.value)}
         ></input>
+        <button
+          className="deleteButton"
+          onClick={() => deleteMethod(true,data)}>
+            Delete
+        </button>
+        </span>
       </div>
     );
   } else if (image) {

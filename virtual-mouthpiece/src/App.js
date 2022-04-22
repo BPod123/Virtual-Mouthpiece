@@ -8,13 +8,13 @@ function App() {
   const [validBoards, setValidBoards] = useState({});
 
   // ON LOAD: get request to get connected displays
-  useEffect(() => {
+  /*useEffect(() => {
     fetch("http://127.0.0.1:5000/flask/upload")
       .then((response) => response.json())
       .then((data) => {
         setValidBoards(JSON.parse(data));
       });
-  }, []);
+  }, []);*/
   return (
     validBoards && (
       <div>

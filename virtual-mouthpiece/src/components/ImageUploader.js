@@ -53,6 +53,18 @@ export default function ImageUploader(props) {
     setRuntimes(new Map(runtimes.set(index, runtime)));
   }
 
+  function deleteMethod(deleteBool, data) {
+    if (deleteBool) {
+      if (fileList.length == 1) {
+        setFileList([]);
+      }
+      const deleteIndex = fileList.indexOf(data);
+      if (deleteIndex != -1) {
+        setFileList(fileList.slice(0,deleteIndex).concat(fileList.slice(deleteIndex+1)));
+      }
+    }
+  }
+
   const handleChange = (e) => {
     // Destructuring
     const { value, checked } = e.target;
@@ -118,10 +130,12 @@ export default function ImageUploader(props) {
           {fileList.map((data) => {
             return (
               <ImagePreviewer
+                data={data}
                 url={data.url}
                 image={data.image}
                 showTime={true}
                 onRuntimeChange={handleRuntimeChange}
+                deleteMethod={deleteMethod}
               />
             );
           })}
