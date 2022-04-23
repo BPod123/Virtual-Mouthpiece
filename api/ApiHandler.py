@@ -1,8 +1,5 @@
-from flask_restful import Api, Resource, reqparse
+from flask_restful import Resource, reqparse
 from werkzeug.datastructures import FileStorage
-from api.ResizeDemo import main as resizeImage
-from PIL import Image
-from FileTransfer.Client import sendFile
 from Server import ServerInstance
 import json
 class ApiHandler(Resource):

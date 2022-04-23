@@ -7,8 +7,7 @@ from abc import ABCMeta, abstractmethod
 from enum import Enum
 from Slideshow.Format_Slideshow import getGifFrames
 from PIL import Image
-from time import time, sleep
-from screeninfo import get_monitors
+from time import time
 
 class FileType(Enum):
     IMAGE = 0
