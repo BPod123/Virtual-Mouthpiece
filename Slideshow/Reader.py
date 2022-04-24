@@ -114,11 +114,13 @@ class FileReader(FrameIterator):
     def __init__(self, fileInfo: dict, movingAvg):
         self.info = fileInfo
         path = fileInfo['path']
-
-        if path.lower()[path.rfind('.') + 1:] in ['npy']:
+        fileEnding = path.lower()[path.rfind('.') + 1:]
+        if fileEnding in ['npy']:
             self.fileType = FileType.IMAGE
             self.cap = np.asarray(Image.open(path).convert('RGB').getdata())
-
+        elif fileEnding in ['jpeg', 'jpg', 'png']:
+            self.fileType = FileType.IMAGE
+            self.cap = cv2.imread(path)
         else:
             self.fileType = FileType.VIDEO
             self.cap = cv2.VideoCapture(self.info['path'])
