@@ -8,7 +8,7 @@ from enum import Enum
 from Slideshow.Format_Slideshow import getGifFrames
 from PIL import Image
 from time import time
-
+from screeninfo import get_monitors
 class FileType(Enum):
     IMAGE = 0
     GIF = 1
@@ -303,9 +303,14 @@ class Reader(object):
         """
         Like showImage, except that it positions the window as well.
         """
-        cv2.namedWindow(displayName, cv2.WND_PROP_FULLSCREEN)
-        cv2.setWindowProperty(displayName, cv2.WND_PROP_TOPMOST, 1)
-        cv2.setWindowProperty(displayName, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+        monitors = get_monitors()
+        if True in [self.slideshow.width == monitor.width and self.slideshow.height == monitor.height for monitor in
+                 monitors]:
+            cv2.namedWindow(displayName, cv2.WND_PROP_FULLSCREEN)
+            cv2.setWindowProperty(displayName, cv2.WND_PROP_TOPMOST, 1)
+            cv2.setWindowProperty(displayName, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+
         self.showImage(displayName, frame, millis)
 
 

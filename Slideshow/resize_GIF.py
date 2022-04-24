@@ -76,7 +76,10 @@ def extract_and_resize_frames(path, resize_to=None):
             If not, we need to apply the global palette to the new frame.
             '''
             if not im.getpalette():
-                im.putpalette(p)
+                try:
+                    im.putpalette(p)
+                except:
+                    pass
 
             new_frame = Image.new('RGBA', im.size)
 
