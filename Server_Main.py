@@ -2,7 +2,6 @@ import os
 from app import main as appMain
 from threading import Thread
 from Server import ServerInstance
-from time import sleep
 def startReact():
     os.system("yarn --cwd virtual-mouthpiece start")
 def startApp():
