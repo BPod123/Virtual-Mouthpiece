@@ -221,7 +221,7 @@ class Reader(object):
 
     def nextFileReader(self):
         fileIndex = self.fileIndex + 1 if self.reader is not None and self.fileIndex < len(
-            self.slideshow.info) - 1 else 0
+            self.slideshow.info['info']) - 1 else 0
         reader = FileReader(self.slideshow.info['info'][fileIndex], self.movingAvg)
         return reader, fileIndex
 
