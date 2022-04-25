@@ -70,14 +70,14 @@ This project is [MIT](https://spdx.org/licenses/MIT.html) licensed.
 Virtual-Mouthpiece can be installed in three simple steps.
 1. Install [Python](https://www.python.org/downloads/) 3.9 or higher
 2. Install [Node.js](https://nodejs.org/en/) 16 or higher.
-3. Run _install_dependencies.py_ by executing the command
-<br>
-_python Server_Main.py_ <br> on the command prompt in the Virtual-Mouthpiece directory.
+3. Run install_dependencies.py by executing the command
+
+python Server_Main.py <br> on the command prompt in the Virtual-Mouthpiece directory.
    1. This file will install all necessary python and node dependencies needed to run Virtual-Mouthpiece
 # Running the Server
    The server is the computer that you will use to create slideshows on and choose which display to send them to.
-To start the server, run _Server_Main.py_ by executing the command <br>
-_python Server_Main.py_
+To start the server, run Server_Main.py by executing the command <br>
+python Server_Main.py
    <br> on the command prompt in the Virtual-Mouthpiece directory.
 <br>
 After running this command, a window should open with the main Virtual-Mouthpiece screen.
@@ -88,7 +88,7 @@ Also, in the terminal, you should see a message that says
 # Running a Display Client
 The display client is the computer that is directly connected to the display.
 To run an instance of the client
-1. Run _Display_Client_Main.py_
+1. Run Display_Client_Main.py
 2. You will next be prompted to choose a configuration option
    1. If this is not your first time connecting to the current server computer, 
    you have the option to use the last used configuration option.
