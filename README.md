@@ -72,7 +72,7 @@ Virtual-Mouthpiece can be installed in three simple steps.
 2. Install [Node.js](https://nodejs.org/en/) 16 or higher.
 3. Run install_dependencies.py by executing the command
 
-python install_dependencies.py
+python install_dependencies.py (or sudo python install_dependencies.py if on linux)
 
 on the command prompt in the Virtual-Mouthpiece directory.
 
@@ -81,6 +81,8 @@ This file will install all necessary python and node dependencies needed to run 
    The server is the computer that you will use to create slideshows on and choose which display to send them to.
 To start the server, run Server_Main.py by executing the command <br>
 python Server_Main.py
+
+or (sudo python Server_Main.py for linux)
    <br> on the command prompt in the Virtual-Mouthpiece directory.
 <br>
 After running this command, a window should open with the main Virtual-Mouthpiece screen.
