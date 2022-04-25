@@ -17,6 +17,8 @@ class Server(object):
         self.ipaddress = socket.gethostbyname(socket.gethostname())
         self.sock = socket.socket()
         self.sock.bind((self.ipaddress, self.port))
+        for i in range(10):
+            print(f"Server running on {self.ipaddress}:{self.port}\nConnect to {self.ipaddress}:{self.port}")
         # self.getRequestSock = socket.socket()
         # self.getRequestSock.bind((self.ipaddress, self.getRequestPort))
         self.slideshowCompileFolder = "slideshowCompileFolder"
