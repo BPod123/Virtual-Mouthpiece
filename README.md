@@ -24,6 +24,15 @@ Give a ⭐️ if this project helped you!
 This project is [MIT](https://spdx.org/licenses/MIT.html) licensed.
 
 # Release Notes
+## 0.5.0
+### Features
+* Project as defined in scope is completed.
+### Bug Fixes
+* Raspberry Pi is no longer needed as scope has narrowed.
+* Slideshow runtimes and titles send through API.
+### Known Issues
+* None!
+
 ## 0.4.0
 ### Features
 * Users are now able to add images to slideshow with an improved UI/UX.
@@ -70,40 +79,35 @@ This project is [MIT](https://spdx.org/licenses/MIT.html) licensed.
 Virtual-Mouthpiece can be installed in three simple steps.
 1. Install [Python](https://www.python.org/downloads/) 3.9 or higher
 2. Install [Node.js](https://nodejs.org/en/) 16 or higher.
-3. Run install_dependencies.py by executing the command
-
-python install_dependencies.py (or sudo python install_dependencies.py if on linux)
+3. Run install_dependencies.py by executing the command ```python install_dependencies.py``` or on linux, ```sudo python install_dependencies.py```
 
 on the command prompt in the Virtual-Mouthpiece directory.
 
-This file will install all necessary python and node dependencies needed to run Virtual-Mouthpiece
-# Running the Server
-   The server is the computer that you will use to create slideshows on and choose which display to send them to.
-To start the server, run Server_Main.py by executing the command <br>
-python Server_Main.py
+This file will install all necessary python and node dependencies needed to run Virtual-Mouthpiece.
+## Running the Server
+The server is the computer that you will use to create slideshows on and choose which display to send them to.
+To start the server, execute the following commands from the terminal/command prompt in the `Virtual-Mouthpiece` directory:
 
-or (sudo python Server_Main.py for linux)
-   <br> on the command prompt in the Virtual-Mouthpiece directory.
-<br>
-After running this command, a window should open with the main Virtual-Mouthpiece screen.
+```python Server_Main.py```
+or on linux, ```sudo python Server_Main.py```.
+
+on the command prompt in the Virtual-Mouthpiece directory.
+After running this command, a browser window should open with the main Virtual-Mouthpiece screen.
 Also, in the terminal, you should see a message that says
-"Project is running at http://###.##.###.###" where "###.##.###.###" is your computer's IP address. 
-   Make a note of this for starting client instances.  
 
-# Running a Display Client
+```Project is running at http://###.##.###.###```
+
+where `###.##.###.###` is your computer's IP address.
+
+📝 *Make a note of this for starting client instances.*
+
+## Running a Display Client
 The display client is the computer that is directly connected to the display.
-To run an instance of the client
-1. Run Display_Client_Main.py
-2. You will next be prompted to choose a configuration option
-   1. If this is not your first time connecting to the current server computer, 
-   you have the option to use the last used configuration option.
+To run an instance of the client,
+1. Run `Display_Client_Main.py` by executing the following commands from the terminal/command prompt in the `Virtual-Mouthpiece` directory: ```python Server_Main.py```. Or, on linux, ```sudo python Server_Main.py```.
+2. You will next be prompted to choose a configuration option.
+   1. If this is not your first time connecting to the current server computer, you have the option to use the last used configuration option.
    2. If this is the first time connecting to a server computer, choose the option to create a new configuration.
-      1. When selecting your configuration options, the server ip address from the previous section will be necessary
-      for the display client to know which computer to connect to.
+      1. When selecting your configuration options, the server ip address from the previous section will be necessary for the display client to know which computer to connect to.
 
-Once a configuration has been set, the display client should be running. If the server
-is already running and you do not see the display client's name, refresh the page.
-
-
-
-
+Once a configuration has been set, the display client should be running. If the server is already running and you do not see the display client's name, refresh the page.
