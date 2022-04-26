@@ -55,11 +55,11 @@ export default function ImageUploader(props) {
 
   function deleteMethod(deleteBool, data) {
     if (deleteBool) {
-      if (fileList.length == 1) {
+      if (fileList.length === 1) {
         setFileList([]);
       }
       const deleteIndex = fileList.indexOf(data);
-      if (deleteIndex != -1) {
+      if (deleteIndex !== -1) {
         setFileList(fileList.slice(0,deleteIndex).concat(fileList.slice(deleteIndex+1)));
       }
     }
